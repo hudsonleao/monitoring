@@ -1,0 +1,19 @@
+# Before Script
+before_script:
+    - echo "Executing scripts"
+#Stages
+stages:
+    - test
+    - sandbox
+test:
+    stage: test
+    only: 
+        - sandbox
+    script:
+        - echo "Executing tests"
+sandbox:
+    stage: sandbox
+    only:
+        - sandbox
+    script:
+        - echo "Executing deploy in sandbox"

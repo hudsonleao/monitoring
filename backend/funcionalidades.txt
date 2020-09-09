@@ -1,0 +1,11 @@
+- Cadastrar, editar e excluir aplicações pela URL ou IP e porta;
+- Cadastrar, editar e excluir servidor com monitoramento via ICMP e poderá ser utilizado para monitorar algum serviço com a 
+respectiva porta com possibilidade de disparar algum evento via ssh ao mesmo ex: service nginx restart;
+- Cadastrar, editar e excluir id do usuário e id do grupo telegram para receber notificação;
+- Cadastrar, editar e excluir e-mail que receberá notificação;
+- Cadastrar, editar e excluir intervalo entre cada verificação e qual será o limite de erros para que após atingido o limite a 
+notificação seja enviada;
+- Cadastrar, editar e excluir usuário do sistema, com acl de 2 níveis (admin e comum);
+
+Tela principal conterá um gráfico que monstrará se houve alguma queda ou se manteve estável, com possibilidade
+de filtrar por dia, semana e mês.

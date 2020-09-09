@@ -1,0 +1,7 @@
+apps:
+  - name     : 'monit-app-telegram'
+    script   : ./app.js
+    log_date_format : 'YYYY-MM-DD HH:mm:ss'
+    exec_mode: fork
+    env    :
+      NODE_ENV: production
