@@ -1,7 +1,7 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
-const apiUrl = 'http://localhost:8065';
+const apiUrl = process.env.API_URL;
 const httpClient = fetchUtils.fetchJson;
 
 let user = localStorage.getItem('username');
