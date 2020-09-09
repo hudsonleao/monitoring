@@ -15,9 +15,6 @@ const CustomersFilter = (props) => (
 );
 
 export const CustomersList = (props) => {
-    if(this.plans_id ==1 ){
-        console.log("teste")
-    }
     return (<List filters={<CustomersFilter />} {...props}>
         <Datagrid rowClick="edit">
             <TextField source="id" />
@@ -33,12 +30,11 @@ export const CustomersList = (props) => {
     )
 }
 
-export const CustomersEdit = props => (
-    
-    <Edit title={<CustomersTitle />} {...props}>
+export const CustomersEdit = (props) => {
+    return (<Edit title={<CustomersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <ReferenceInput label="Plans" source="plansId" reference="plans">
+            <ReferenceInput label="Plans" source="plans_id" reference="plans">
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="name" />
@@ -49,7 +45,8 @@ export const CustomersEdit = props => (
             <TextInput source="document" />
         </SimpleForm>
     </Edit>
-);
+    )
+};
 
 export const CustomersCreate = props => (
     <Create {...props}>

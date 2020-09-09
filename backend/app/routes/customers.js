@@ -4,4 +4,5 @@ module.exports = function (app) {
         .get(controller.getCustomers)
     app.route("/customers/:id")
         .get(controller.getCustomer)
+        .put(controller.updateCustomer)
 }
