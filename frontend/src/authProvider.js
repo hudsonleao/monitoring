@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let apiUrl = 'https://service.monitoramos.com.br'
+let apiUrl = process.env.API_URL;
 
 export default {
     // called when the user attempts to log in
