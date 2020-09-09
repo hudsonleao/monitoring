@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let apiUrl = 'http://localhost:8065'
+let apiUrl = 'https://service.monitoramos.com.br'
 
 export default {
     // called when the user attempts to log in
