@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "API_URL=http://localhost:8065/ react-scripts start",
-    "build": "API_URL=https://monitoramos.com.br/ react-scripts build",
+    "build": "API_URL=https://service.monitoramos.com.br/ react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
