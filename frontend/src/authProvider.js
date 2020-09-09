@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let apiUrl = process.env.API_URL;
+let apiUrl = $API_URL;
 
 export default {
     // called when the user attempts to log in
