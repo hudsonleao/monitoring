@@ -16,8 +16,8 @@
     "react-scripts": "3.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "API_URL=http://localhost:8065/ react-scripts start",
+    "build": "API_URL=https://monitoramos.com.br/ react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
