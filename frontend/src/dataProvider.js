@@ -1,7 +1,12 @@
 import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
-const apiUrl = $API_URL;
+let apiUrl;
+if(process.env.NODE_ENV === "development"){
+    apiUrl = "http://localhost:8065"
+} else {
+    apiUrl = "https://service.monitoramos.com.br"
+}
 const httpClient = fetchUtils.fetchJson;
 
 let user = localStorage.getItem('username');

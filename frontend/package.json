@@ -7,17 +7,18 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.20.0",
+    "env-cmd": "^10.1.0",
     "node-fetch": "^2.6.0",
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^3.8.2",
     "react": "^16.13.1",
     "react-admin": "^3.8.2",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3"
+    "react-scripts": "^3.4.3"
   },
   "scripts": {
-    "start": "API_URL=http://localhost:8065 react-scripts start",
-    "build": "API_URL=https://service.monitoramos.com.br react-scripts build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
