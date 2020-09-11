@@ -165,5 +165,65 @@ module.exports = function (app) {
         }
     }
 
+         /**
+     * deleteCustomer
+     * @param {Object} req
+     * @param {Object} res
+     * @method DELETE
+     * @route /customers/:id
+     */
+    controller.deleteCustomer = async (req, res) => {
+        const userValid = await Auth.validaUser(req);
+        if (userValid) {
+            let plan = await Customers.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
+            if (plan) {
+                plan = plan.dataValues;
+                let appDelete = await Customers.destroy({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                if (appDelete) {
+                    res.status(200).send(plan);
+                } else {
+                    res.status(500).send("error: it was not possible to delete the data.");
+                }
+
+            } else {
+                res.status(500).send("error: record does not exist");
+            }
+        } else {
+            res.status(401).send("error: user invalid");
+        }
+    }
+
+        /**
+     * deleteCustomers
+     * @param {Object} req
+     * @param {Object} res
+     * @method DELETE
+     * @route /plans
+     */
+    controller.deleteCustomers = async (req, res) => {
+        const userValid = await Auth.validaUser(req);
+        if (userValid) {
+            let ids = req.body.id
+            for (let i = 0; i < ids.length; i++) {
+                await Customers.destroy({
+                    where: {
+                        id: ids[i]
+                    }
+                });
+            }
+            res.status(200).send(ids);
+        } else {
+            res.status(401).send("error: user invalid");
+        }
+    }
+
     return controller;
 };

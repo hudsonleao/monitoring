@@ -9,13 +9,15 @@ import authProvider from './authProvider';
 import dataProvider from './dataProvider';
 
 import ApplicationsIcon from '@material-ui/icons/Apps';
-import UserIcon from '@material-ui/icons/Group';
-import CustomersIcon from '@material-ui/icons/PeopleAlt';
+import PlansIcon from '@material-ui/icons/LocalOffer';
+import UserIcon from '@material-ui/icons/AssignmentInd';
+import CustomersIcon from '@material-ui/icons/AccountBalanceWallet';
+
 
 const App = () => (
   <Admin dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
     <Resource name="applications" list={ApplicationsList} edit={ApplicationsEdit} create={ApplicationsCreate} icon={ApplicationsIcon} />
-    <Resource name="plans" list={PlansList} edit={PlansEdit} create={PlansCreate} icon={ApplicationsIcon} />
+    <Resource name="plans" list={PlansList} edit={PlansEdit} create={PlansCreate} icon={PlansIcon} />
     <Resource name="customers" list={CustomersList} edit={CustomersEdit} create={CustomersCreate} icon={CustomersIcon} />
     <Resource name="users" list={UserList} icon={UserIcon} />
   </Admin>

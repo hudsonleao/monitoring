@@ -28,7 +28,28 @@ module.exports = function (app) {
             }
             res.status(200).send(users)
         } else {
-            res.status(500).json({message: 'error: user invalid'})
+            res.status(500).json({ message: 'error: user invalid' })
+        }
+    }
+
+    /**
+* getUser
+* @param {Object} req
+* @param {Object} res
+* @method GET
+* @route /users/:id
+*/
+    controller.getUser = async (req, res) => {
+        const userValid = await Auth.validaUser(req);
+        if (userValid) {
+            let plans = await Users.findAll({
+                where: {
+                    id: req.params.id
+                }
+            });
+            res.status(200).send(plans[0])
+        } else {
+            res.status(500).json("error: fail get plans")
         }
     }
 
@@ -37,7 +58,7 @@ module.exports = function (app) {
      * @param {Object} req
      * @param {Object} res
      * @method POST
-     * @route /usuarios/adicionar
+     * @route /users
      */
     controller.addUser = async (req, res) => {
         const userValid = await Auth.validaUser(req);
@@ -83,6 +104,41 @@ module.exports = function (app) {
             }
         } else {
             res.render('index', { erro: true })
+        }
+    }
+
+    /**
+ * updateUser
+ * @param {Object} req
+ * @param {Object} res
+ * @method PUT
+ * @route /users/:id
+ */
+    controller.updateUser = async (req, res) => {
+        const userValid = await Auth.validaUser(req);
+        if (userValid) {
+            let data = req.body;
+            let save = await Users.update({
+                name: data.name,
+                user: data.user,
+                level: data.level
+            }, {
+                where: {
+                    id: data.id
+                }
+            });
+            if (save) {
+                let values = []
+                values.push({
+                    id: data.id,
+                    name: data.name,
+                    user: data.user,
+                    level: data.level
+                });
+                res.status(200).send(values);
+            }
+        } else {
+            res.status(401).send("error: user invalid");
         }
     }
 

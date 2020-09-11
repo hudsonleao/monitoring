@@ -1,5 +1,5 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, ReferenceField, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
 
 const CustomersTitle = ({ record }) => {
     return <span>Edit customer: {record ? `"${record.description}"` : ''}</span>;
