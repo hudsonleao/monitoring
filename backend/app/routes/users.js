@@ -3,9 +3,9 @@ module.exports = function (app) {
     app.route("/users")
         .get(controller.getUsers)
         .post(controller.addUser)
-        .delete(controller.deleteUsers)
+        //.delete(controller.deleteUsers)
     app.route("/users/:id")
         .get(controller.getUser)
         .put(controller.updateUser)
-        .delete(controller.deleteUser)
+        //.delete(controller.deleteUser)
 }
