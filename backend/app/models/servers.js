@@ -8,6 +8,14 @@ module.exports = function (app) {
 			primaryKey: true,
 			allowNull: false
 		},
+		users_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
 		description: {
 			type: Sequelize.STRING(255),
 			allowNull: false
@@ -16,7 +24,7 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: false
         },
-        key_ssh: {
+        ssh_key: {
 			type: Sequelize.STRING(500),
 			allowNull: false
 		},

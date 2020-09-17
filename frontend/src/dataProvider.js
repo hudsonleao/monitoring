@@ -2,7 +2,7 @@ import { fetchUtils } from 'react-admin';
 import { stringify } from 'query-string';
 
 let apiUrl;
-if(process.env.NODE_ENV === "development"){
+if (process.env.NODE_ENV === "development") {
     apiUrl = "http://localhost:8065"
 } else {
     apiUrl = "https://service.monitoramos.com.br"
@@ -11,7 +11,14 @@ const httpClient = fetchUtils.fetchJson;
 
 let user = localStorage.getItem('username');
 let secret = localStorage.getItem('secret');
+let token = localStorage.getItem('token');
 
+let header = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    'user': user,
+    'secret': secret
+}
 
 export default {
     getList: (resource, params) => {
@@ -25,7 +32,7 @@ export default {
 
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).then(({ json }) => ({
             data: json,
             total: parseInt(json.length),
@@ -35,7 +42,7 @@ export default {
     getOne: (resource, params) => {
         return httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).then(({ json }) => ({
             data: json,
         }));
@@ -47,8 +54,8 @@ export default {
         };
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
-            headers: new Headers({ 'user': user, 'secret': secret }),
-        }).then(({ headers, json }) => ({
+            headers: new Headers(header),
+        }).then(({ json }) => ({
             data: json,
         }));
     },
@@ -67,7 +74,7 @@ export default {
 
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).then(({ headers, json }) => ({
             data: json,
             total: parseInt(headers.get('content-range').split('/').pop(), 10),
@@ -78,7 +85,7 @@ export default {
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).catch((error) => {
             let erro;
             if (error.status === 406) {
@@ -103,7 +110,7 @@ export default {
         return httpClient(`${apiUrl}/${resource}`, {
             method: 'POST',
             body: JSON.stringify(params.data),
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).catch((error) => {
             let erro;
             if (error.status === 406) {
@@ -120,7 +127,7 @@ export default {
     delete: (resource, params) =>
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).then(({ json }) => ({ data: json })),
 
     deleteMany: (resource, params) => {
@@ -128,7 +135,7 @@ export default {
         return httpClient(`${apiUrl}/${resource}`, {
             method: 'DELETE',
             body: JSON.stringify({ id: params.ids }),
-            headers: new Headers({ 'user': user, 'secret': secret }),
+            headers: new Headers(header),
         }).then(({ json }) => ({ data: json }));
     }
 };

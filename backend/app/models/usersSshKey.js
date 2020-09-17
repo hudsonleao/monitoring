@@ -1,48 +1,32 @@
 let Sequelize = require('sequelize');
 module.exports = function (app) {
 	
-	let Users = app.sequelize.define('users', {
+	let UsersSshKey = app.sequelize.define('users_ssh_key', {
 		id: {
 			type: Sequelize.INTEGER,
 			autoIncrement: true,
 			primaryKey: true,
 			allowNull: false
-		},
-		customers_id: {
+        },
+        users_id: {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
-                model: 'customers',
+                model: 'users',
                 key: 'id'
             }
         },
-		name: {
+		ssh_key: {
 			type: Sequelize.STRING(255),
 			allowNull: false
-		},
-		user: {
-			type: Sequelize.STRING(255),
-			allowNull: false
-        },
-        password: {
-			type: Sequelize.STRING(255),
-			allowNull: false
-		},
-		level: {
-			type: Sequelize.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'users_level',
-                key: 'id'
-            }
 		},
 	}, {
 		createdAt: false,
 		updatedAt: false,
 		deletedAt: false,
 		freezeTableName: true,
-		tableName: 'users'
+		tableName: 'users_ssh_key'
 	});
 
-	return Users;
+	return UsersSshKey;
 };

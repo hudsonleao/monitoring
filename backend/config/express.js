@@ -20,18 +20,24 @@ module.exports = function () {
     app.options("*", cors());
     
     app.get('/jwt', (req, res) => {
+        if(req.headers.token === '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf'){
         const token = jsonwebtoken.sign({ user: 'hudson' }, jwtSecret);
         res.cookie('token', token, { httpOnly: true });
         res.json({ token });
+        } else {
+            res.status(401).json("token invalid")
+        }
     });
 
+    app.use(jwt({ secret: jwtSecret, algorithms: ['HS256'] }));
+    
     consign({ cwd: 'app', verbose: false })
         .include("models")
         .then("controllers")
         .then("routes")
         .into(app);
     
-        app.use(jwt({ secret: jwtSecret, algorithms: ['HS256'] }));
+        
         
 
     return app;

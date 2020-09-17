@@ -1,4 +1,5 @@
 const auth = require('./auth');
+
 module.exports = function (app) {
     let controller = {};
     const Applications = app.models.aplications;

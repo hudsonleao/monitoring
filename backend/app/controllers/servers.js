@@ -1,131 +1,129 @@
 const auth = require("./auth");
-const crypto = require("crypto");
 module.exports = function (app) {
     let controller = {};
-    const Users = app.models.users;
+    const Servers = app.models.servers;
     const Auth = new auth(app);
 
     /**
-     * index
+     * getServers
      * @param {Object} req
      * @param {Object} res
      * @method GET
-     * @route /users
+     * @route /servers
      */
-    controller.getUsers = async (req, res) => {
+    controller.getServers = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
-            let users;
+            let servers;
             if (userValid.level == 3) {
-                users = await Users.findAll();
+                servers = await Servers.findAll();
+                for (let i = 0; i < servers.length; i++) {
+                    let ssh_key = servers[i].ssh_key.split(" ")
+                    servers[i].ssh_key = ssh_key[2];
+                }
             } else if (userValid.level == 2) {
-                users = await Users.findAll({
+                servers = await Servers.findAll({
                     where: {
                         id: userValid.id
                     }
                 });
+                for (let i = 0; i < servers.length; i++) {
+                    let ssh_key = servers[i].ssh_key.split(" ")
+                    servers[i].ssh_key = ssh_key[2];
+                    servers[i].ssh_key = ssh_key+ "...";
+                }
             } else {
-                users = [];
+                servers = [];
             }
-            res.status(200).send(users)
+            res.status(200).send(servers)
         } else {
-            res.status(500).json({ message: 'error: user invalid' })
+            res.status(401).json({ message: 'error: user invalid' })
         }
     }
 
     /**
-* getUser
+* getServer
 * @param {Object} req
 * @param {Object} res
 * @method GET
-* @route /users/:id
+* @route /servers/:id
 */
-    controller.getUser = async (req, res) => {
+    controller.getServer = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
-            let plans = await Users.findAll({
+            let servers = await Servers.findOne({
                 where: {
                     id: req.params.id
                 }
             });
-            res.status(200).send(plans[0])
+            res.status(200).send(servers)
         } else {
-            res.status(500).json("error: fail get plans")
+            res.status(500).json("error: fail get servers")
         }
     }
 
     /**
-     * addUser
+     * addServer
      * @param {Object} req
      * @param {Object} res
      * @method POST
-     * @route /users
+     * @route /servers
      */
-    controller.addUser = async (req, res) => {
+    controller.addServer = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         let msg;
         if (userValid) {
 
             let data = req.body;
-            let password = data.password;
-            password = crypto.createHash('md5').update(password).digest("hex");
-            let userExist = await Users.findOne({
+            let serverExist = await Servers.findOne({
                 where: {
-                    user: data.user,
-                    password: password
+                    users_id: userValid.id,
+                    ip: data.ip
                 }
             });
-            if (userExist) {
-                msg = `The user are already registered!!! ID: ${userExist.dataValues.id}`
-                let value = [];
-                value.push({
-                    customers_id: userValid.customers_id,
-                    name: data.name,
-                    user: data.user,
-                    level: data.level
-                })
-                return res.status(500).json(msg)
+            if (serverExist) {
+                msg = `The ip are already registered!!! ID: ${serverExist.dataValues.id}`
+                return res.status(500).send(msg)
 
             } else {
-                let save = await Users.create({
-                    customers_id: userValid.customers_id,
-                    name: data.name,
-                    user: data.user,
-                    password: password,
-                    level: data.level
+                let save = await Servers.create({
+                    users_id: userValid.id,
+                    description: data.description,
+                    ip: data.ip,
+                    ssh_key: data.ssh_key
                 });
                 if (save) {
-                    let value = []
-                    value.push({
-                        customers_id: userValid.customers_id,
-                        name: data.name,
-                        user: data.user,
-                        level: data.level
+                    let values = []
+                    values.push({
+                        id: save.id,
+                        users_id: userValid.id,
+                        description: data.description,
+                        ip: data.ip,
+                        ssh_key: data.ssh_key
                     });
-                    return res.status(200).json(value)
+                    return res.status(200).send(values)
                 }
             }
-
         } else {
-            return res.status(401).send("error: user invalid");
+            return res.status(401).json({ message: 'error: user invalid' })
         }
     }
 
     /**
- * updateUser
+ * updateServer
  * @param {Object} req
  * @param {Object} res
  * @method PUT
- * @route /users/:id
+ * @route /servers/:id
  */
-    controller.updateUser = async (req, res) => {
+    controller.updateServer = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
             let data = req.body;
-            let save = await Users.update({
-                name: data.name,
-                user: data.user,
-                level: data.level
+            let save = await Servers.update({
+                description: data.description,
+                ip: data.ip,
+                ssh_key: data.ssh_key
             }, {
                 where: {
                     id: data.id
@@ -135,9 +133,9 @@ module.exports = function (app) {
                 let values = []
                 values.push({
                     id: data.id,
-                    name: data.name,
-                    user: data.user,
-                    level: data.level
+                    description: data.description,
+                    ip: data.ip,
+                    ssh_key: data.ssh_key
                 });
                 res.status(200).send(values);
             }
@@ -147,29 +145,28 @@ module.exports = function (app) {
     }
 
     /**
-* deleteUser
+* deleteServer
 * @param {Object} req
 * @param {Object} res
 * @method DELETE
-* @route /users/:id
+* @route /servers/:id
 */
-    controller.deleteUser = async (req, res) => {
+    controller.deleteServer = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
-            let plan = await Users.findOne({
+            let server = await Servers.findOne({
                 where: {
                     id: req.params.id
                 }
             });
-            if (plan) {
-                plan = plan.dataValues;
-                let appDelete = await Users.destroy({
+            if (server) {
+                let serverDelete = await Servers.destroy({
                     where: {
                         id: req.params.id
                     }
                 });
-                if (appDelete) {
-                    res.status(200).send(plan);
+                if (serverDelete) {
+                    res.status(200).send(server);
                 } else {
                     res.status(500).send("error: it was not possible to delete the data.");
                 }
@@ -183,18 +180,18 @@ module.exports = function (app) {
     }
 
     /**
- * deleteUsers
+ * deleteServers
  * @param {Object} req
  * @param {Object} res
  * @method DELETE
- * @route /users
+ * @route /servers
  */
-    controller.deleteUsers = async (req, res) => {
+    controller.deleteServers = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
             let ids = req.body.id
             for (let i = 0; i < ids.length; i++) {
-                await Users.destroy({
+                await Servers.destroy({
                     where: {
                         id: ids[i]
                     }
