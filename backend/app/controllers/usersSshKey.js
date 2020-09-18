@@ -3,7 +3,6 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fsPromisse = require('await-fs');
 const fs = require('fs');
-//const os = require('os');
 
 module.exports = function (app) {
     let controller = {};
@@ -95,10 +94,6 @@ module.exports = function (app) {
             await exec(`ssh-keygen -C ${userValid.user} -f ${folder}/id_rsa -N ""`);
 
             let key = await fsPromisse.readFile(`${folder}/id_rsa.pub`, 'utf-8');
-            
-            // if (os.platform() !== "win32") {
-            //     await fs.chmodSync(`${folder}/id_rsa`, 0o400)
-            // }
             
             await UsersSshKey.create({
                 users_id: userValid.id,
