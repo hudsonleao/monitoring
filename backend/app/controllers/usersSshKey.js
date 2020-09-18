@@ -89,12 +89,15 @@ module.exports = function (app) {
 
             if (fs.existsSync(`${folder}/id_rsa`)) {
                 await fs.unlinkSync(`${folder}/id_rsa`);
+                if (fs.existsSync(`${folder}/id_rsa.pub`)) {
+                    await fs.unlinkSync(`${folder}/id_rsa.pub`);
+                }
             }
 
             await exec(`ssh-keygen -C ${userValid.user} -f ${folder}/id_rsa -N ""`);
 
             let key = await fsPromisse.readFile(`${folder}/id_rsa.pub`, 'utf-8');
-            
+
             await UsersSshKey.create({
                 users_id: userValid.id,
                 ssh_key: key
