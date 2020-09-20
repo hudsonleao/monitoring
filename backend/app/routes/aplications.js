@@ -3,7 +3,7 @@ module.exports = function (app) {
     app.route("/applications")
         .get(controller.getApplications)
         .delete(controller.deleteApplications)
-        .post(controller.addApplication)
+        .post(controller.createApplication)
     app.route("/applications/:id")
         .get(controller.getApplication)
         .put(controller.updateApplication)

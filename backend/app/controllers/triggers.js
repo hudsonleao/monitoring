@@ -2,6 +2,7 @@ const auth = require("./auth");
 module.exports = function (app) {
     let controller = {};
     const Triggers = app.models.triggers;
+    const Users = app.models.users;
     const Auth = new auth(app);
 
     /**
@@ -12,23 +13,47 @@ module.exports = function (app) {
      * @route /triggers
      */
     controller.getTriggers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let telegram;
-            if (userValid.level == 3) {
-                telegram = await Triggers.findAll();
-            } else if (userValid.level == 2) {
-                telegram = await Triggers.findAll({
-                    where: {
-                        id: userValid.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let trigger;
+                if (userValid.level == 3) {
+                    trigger = await Triggers.findAll();
+                } else if (userValid.level == 2) {
+                    let allTriggers = [];
+                    let users = await Users.findAll({
+                        where: {
+                            customers_id: userValid.customers_id
+                        }
+                    });
+                    for (let i = 0; i < users.length; i++) {
+                        let triggerUser = await Triggers.findAll({
+                            where: {
+                                users_id: users[i].id
+                            }
+                        });
+                        for (let z = 0; z < triggerUser.length; z++) {
+                            allTriggers.push(triggerUser[z]);
+                        }
                     }
-                });
+
+                    trigger = allTriggers
+                } else {
+                    trigger = await Triggers.findAll({
+                        where: {
+                            users_id: userValid.id
+                        }
+                    });
+                }
+                return res.status(200).json(trigger)
             } else {
-                telegram = [];
+                return res.status(401).json({
+                    "message": "User invalid"
+                });
             }
-            res.status(200).send(telegram)
-        } else {
-            res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -40,16 +65,52 @@ module.exports = function (app) {
 * @route /triggers/:id
 */
     controller.getTrigger = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let servers = await Triggers.findOne({
-                where: {
-                    id: req.params.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let trigger
+                if (userValid.level === 3) {
+                    trigger = await Triggers.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                } else if (userValid.level === 2) {
+                    trigger = await Triggers.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    let userTrigger = await Users.findOne({
+                        where: {
+                            id: trigger.users_id
+                        }
+                    });
+                    if (userTrigger.customers_id !== userValid.customers_id) {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        })
+                    }
+                } else {
+                    trigger = await Triggers.findOne({
+                        where: {
+                            id: req.params.id,
+                            users_id: userValid.id
+                        }
+                    });
+                    if (trigger === null || trigger === undefined || trigger === "") {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        });
+                    }
                 }
-            });
-            res.status(200).send(servers)
-        } else {
-            res.status(500).json("error: fail get telegram")
+                return res.status(200).json(trigger)
+            } else {
+                return res.status(500).json("error: fail get telegram")
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -61,39 +122,44 @@ module.exports = function (app) {
      * @route /triggers
      */
     controller.createTrigger = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        let msg;
-        if (userValid) {
+        try {
+            const userValid = await Auth.validaUser(req);
+            let msg;
+            if (userValid) {
 
-            let data = req.body;
-            let triggerExist = await Triggers.findOne({
-                where: {
-                    name: data.name
-                }
-            });
-            if (triggerExist) {
-                msg = `The trigger are already registered!!! ID: ${triggerExist.dataValues.id}`
-                return res.status(500).send(msg)
-
-            } else {
-                let save = await Triggers.create({
-                    users_id: userValid.id,
-                    name: data.name,
-                    command: data.command
+                let data = req.body;
+                let triggerExist = await Triggers.findOne({
+                    where: {
+                        name: data.name
+                    }
                 });
-                if (save) {
-                    let values = []
-                    values.push({
-                        id: save.id,
+                if (triggerExist) {
+                    msg = `The trigger are already registered!!! ID: ${triggerExist.dataValues.id}`
+                    return res.status(500).json(msg)
+
+                } else {
+                    let save = await Triggers.create({
                         users_id: userValid.id,
                         name: data.name,
                         command: data.command
                     });
-                    return res.status(200).send(values)
+                    if (save) {
+                        let values = []
+                        values.push({
+                            id: save.id,
+                            users_id: userValid.id,
+                            name: data.name,
+                            command: data.command
+                        });
+                        return res.status(200).json(values)
+                    }
                 }
+            } else {
+                return res.status(401).json({ message: 'error: user invalid' })
             }
-        } else {
-            return res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -105,28 +171,59 @@ module.exports = function (app) {
  * @route /triggers/:id
  */
     controller.updateTrigger = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let data = req.body;
-            let save = await Triggers.update({
-                name: data.name,
-                command: data.command
-            }, {
-                where: {
-                    id: data.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+
+                let trigger = await Triggers.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+
+                if (userValid.id !== trigger.users_id) {
+                    if (userValid.level === 1) {
+                        return res.status(401).json({
+                            "message": "User cannot access this record"
+                        });
+                    } else if (userValid.level === 2) {
+                        let userTrigger = await Users.findOne({
+                            where: {
+                                id: trigger.users_id
+                            }
+                        });
+                        if (userTrigger.customers_id !== userValid.customers_id) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        }
+                    }
                 }
-            });
-            if (save) {
-                let values = []
-                values.push({
-                    id: data.id,
+
+                let data = req.body;
+                let save = await Triggers.update({
                     name: data.name,
                     command: data.command
+                }, {
+                    where: {
+                        id: data.id
+                    }
                 });
-                res.status(200).send(values);
+                if (save) {
+                    let values = []
+                    values.push({
+                        id: data.id,
+                        name: data.name,
+                        command: data.command
+                    });
+                    return res.status(200).json(values);
+                }
+            } else {
+                return res.status(401).json("user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -138,30 +235,53 @@ module.exports = function (app) {
 * @route /triggers/:id
 */
     controller.deleteTrigger = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let trigger = await Triggers.findOne({
-                where: {
-                    id: req.params.id
-                }
-            });
-            if (trigger) {
-                let triggerDelete = await Triggers.destroy({
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let trigger = await Triggers.findOne({
                     where: {
                         id: req.params.id
                     }
                 });
-                if (triggerDelete) {
-                    res.status(200).send(trigger);
-                } else {
-                    res.status(500).send("error: it was not possible to delete the data.");
-                }
+                if (trigger) {
+                    if (userValid.id !== trigger.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userTrigger = await Users.findOne({
+                                where: {
+                                    id: trigger.users_id
+                                }
+                            });
+                            if (userTrigger.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
+                    }
+                    let triggerDelete = await Triggers.destroy({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    if (triggerDelete) {
+                        return res.status(200).json(trigger);
+                    } else {
+                        return res.status(500).json("error: it was not possible to delete the data.");
+                    }
 
+                } else {
+                    return res.status(500).json("error: record does not exist");
+                }
             } else {
-                res.status(500).send("error: record does not exist");
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -173,19 +293,49 @@ module.exports = function (app) {
  * @route /triggers
  */
     controller.deleteTriggers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let ids = req.body.id
-            for (let i = 0; i < ids.length; i++) {
-                await Triggers.destroy({
-                    where: {
-                        id: ids[i]
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                for (let i = 0; i < ids.length; i++) {
+                    let trigger = await Triggers.findOne({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                    if (userValid.id !== trigger.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userTrigger = await Users.findOne({
+                                where: {
+                                    id: trigger.users_id
+                                }
+                            });
+                            if (userTrigger.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
                     }
-                });
+                }
+                let ids = req.body.id
+                for (let i = 0; i < ids.length; i++) {
+                    await Triggers.destroy({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                }
+                return res.status(200).json(ids);
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-            res.status(200).send(ids);
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 

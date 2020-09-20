@@ -33,6 +33,9 @@ export default {
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({
             data: json,
             total: parseInt(json.length),
@@ -43,6 +46,9 @@ export default {
         return httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({
             data: json,
         }));
@@ -55,6 +61,9 @@ export default {
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({
             data: json,
         }));
@@ -75,6 +84,9 @@ export default {
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ headers, json }) => ({
             data: json,
             total: parseInt(headers.get('content-range').split('/').pop(), 10),
@@ -87,20 +99,7 @@ export default {
             body: JSON.stringify(params.data),
             headers: new Headers(header),
         }).catch((error) => {
-            let erro;
-
-            if (error.status === 401) {
-                erro = "User invalid"
-            }
-            if (resource === "servers") {
-                if (error.status === 406) {
-                    erro = "Url or ip is registered."
-                }
-            } else if (resource === "sshkey"){
-                if (error.status === 406) {
-                    erro = "Description is registered."
-                }
-            }
+            let erro = error.message
             throw erro;
         }).then(({ json }) => ({ data: json })),
 
@@ -111,6 +110,9 @@ export default {
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({ data: json }));
     },
 
@@ -120,19 +122,7 @@ export default {
             body: JSON.stringify(params.data),
             headers: new Headers(header),
         }).catch((error) => {
-            let erro;
-            if (error.status === 401) {
-                erro = "User invalid"
-            }
-            if (resource === "servers") {
-                if (error.status === 406) {
-                    erro = "Url or ip is registered."
-                }
-            } else if (resource === "sshkey"){
-                if (error.status === 406) {
-                    erro = "Description is registered."
-                }
-            }
+            let erro = error.message
             throw erro;
         }).then(({ json }) => ({
             data: { ...params.data, id: json.id },
@@ -143,6 +133,9 @@ export default {
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({ data: json })),
 
     deleteMany: (resource, params) => {
@@ -151,6 +144,9 @@ export default {
             method: 'DELETE',
             body: JSON.stringify({ id: params.ids }),
             headers: new Headers(header),
+        }).catch((error) => {
+            let erro = error.message
+            throw erro;
         }).then(({ json }) => ({ data: json }));
     }
 };

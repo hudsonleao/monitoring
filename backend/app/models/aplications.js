@@ -23,7 +23,7 @@ module.exports = function (app) {
 		},
 		users_telegram_id: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'users_telegram',
                 key: 'id'
@@ -31,7 +31,7 @@ module.exports = function (app) {
 		},
 		triggers_id: {
             type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'triggers',
                 key: 'id'

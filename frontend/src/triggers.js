@@ -3,7 +3,7 @@ import { List, Edit, Filter, Create, SimpleForm, FunctionField, ReferenceInput, 
 import { useMediaQuery } from '@material-ui/core';
 
 const TriggersTitle = ({ record }) => {
-    return <span>Edit trigger: {record ? `"${record.description}"` : ''}</span>;
+    return <span>Edit trigger: {record ? `"${record.name}"` : ''}</span>;
 };
 
 const TriggersFilter = (props) => (

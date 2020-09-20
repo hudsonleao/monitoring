@@ -47,6 +47,9 @@ export default {
     },
     // called when the API returns an error
     checkError: ({ status }) => {
+        if(status === 406){
+            return Promise.resolve();
+        }
         if (status === 401 || status === 403) {
             localStorage.removeItem('username');
             localStorage.removeItem('secret');

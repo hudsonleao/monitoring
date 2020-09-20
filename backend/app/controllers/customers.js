@@ -13,11 +13,15 @@ module.exports = function (app) {
      * @route /customers
      */
     controller.getCustomers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let customers;
-            if (userValid.level === 3) {
-                customers = await Customers.findAll();
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
+                }
+                let customers = await Customers.findAll();
                 for (let i = 0; i < customers.length; i++) {
                     let element = customers[i];
                     let plan = await Plans.findOne({
@@ -29,27 +33,13 @@ module.exports = function (app) {
                     });
                     element.plans_id = plan.name;
                 }
-            } else if (userValid.level === 2) {
-                customers = await Customers.findAll({
-                    where: {
-                        id: userValid.customers_id
-                    }
-                });
-                for (let i = 0; i < customers.length; i++) {
-                    let element = customers[i];
-                    let plan = await Plans.findOne({
-                        attributes: ['name'],
-
-                        where: {
-                            id: element.plans_id
-                        }
-                    });
-                    element.plans_id = plan.name;
-                }
+                return res.status(200).json(customers)
+            } else {
+                return res.status(500).json("error: fail get customers")
             }
-            res.status(200).send(customers)
-        } else {
-            res.status(500).json("error: fail get customers")
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -61,16 +51,26 @@ module.exports = function (app) {
     * @route /customers/:id
     */
     controller.getCustomer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let customers = await Customers.findOne({
-                where: {
-                    id: req.params.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
                 }
-            });
-            res.status(200).send(customers)
-        } else {
-            res.status(500).json("error: fail get applications")
+                let customers = await Customers.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                return res.status(200).json(customers)
+            } else {
+                return res.status(500).json("error: fail get applications")
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -82,34 +82,28 @@ module.exports = function (app) {
          * @route /customers
          */
     controller.addCustomers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        let msg = "";
+        try {
+            const userValid = await Auth.validaUser(req);
+            let msg = "";
 
-        if (userValid) {
-            let email = req.body.email;
-
-            let emailExist = await Customers.findOne({
-                where: {
-                    email: email
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
                 }
-            })
-            if (emailExist) {
-                msg = `The email are already registered!!! ID: ${emailExist.dataValues.id}`
-                res.status(406).json(msg)
-            } else {
-                let save = await Customers.create({
-                    plans_id: req.body.plans_id,
-                    name: req.body.name,
-                    email: req.body.email,
-                    address: req.body.address,
-                    city: req.body.city,
-                    phone_number: req.body.phone_number,
-                    document: req.body.document,
-                });
-                if (save) {
-                    let values = []
-                    values.push({
-                        id: save.dataValues.id,
+                let email = req.body.email;
+
+                let emailExist = await Customers.findOne({
+                    where: {
+                        email: email
+                    }
+                })
+                if (emailExist) {
+                    msg = `The email are already registered!!! ID: ${emailExist.dataValues.id}`
+                    return res.status(406).json(msg)
+                } else {
+                    let save = await Customers.create({
                         plans_id: req.body.plans_id,
                         name: req.body.name,
                         email: req.body.email,
@@ -118,11 +112,27 @@ module.exports = function (app) {
                         phone_number: req.body.phone_number,
                         document: req.body.document,
                     });
-                    res.status(200).send(values);
+                    if (save) {
+                        let values = []
+                        values.push({
+                            id: save.dataValues.id,
+                            plans_id: req.body.plans_id,
+                            name: req.body.name,
+                            email: req.body.email,
+                            address: req.body.address,
+                            city: req.body.city,
+                            phone_number: req.body.phone_number,
+                            document: req.body.document,
+                        });
+                        return res.status(200).json(values);
+                    }
                 }
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -134,94 +144,124 @@ module.exports = function (app) {
      * @route /customers/:id
      */
     controller.updateCustomer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let data = req.body;
-            let save = await Customers.update({
-                plans_id: data.plans_id,
-                name: data.name,
-                address: data.address,
-                city: data.phone_number,
-                document: data.document
-            }, {
-                where: {
-                    id: data.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
                 }
-            });
-            if (save) {
-                let values = []
-                values.push({
-                    id: data.id,
+                let data = req.body;
+                let save = await Customers.update({
                     plans_id: data.plans_id,
                     name: data.name,
                     address: data.address,
                     city: data.phone_number,
                     document: data.document
+                }, {
+                    where: {
+                        id: data.id
+                    }
                 });
-                res.status(200).send(values);
+                if (save) {
+                    let values = []
+                    values.push({
+                        id: data.id,
+                        plans_id: data.plans_id,
+                        name: data.name,
+                        address: data.address,
+                        city: data.phone_number,
+                        document: data.document
+                    });
+                    return res.status(200).json(values);
+                }
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
-         /**
-     * deleteCustomer
-     * @param {Object} req
-     * @param {Object} res
-     * @method DELETE
-     * @route /customers/:id
-     */
+    /**
+* deleteCustomer
+* @param {Object} req
+* @param {Object} res
+* @method DELETE
+* @route /customers/:id
+*/
     controller.deleteCustomer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let plan = await Customers.findOne({
-                where: {
-                    id: req.params.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
                 }
-            });
-            if (plan) {
-                plan = plan.dataValues;
-                let appDelete = await Customers.destroy({
+                let plan = await Customers.findOne({
                     where: {
                         id: req.params.id
                     }
                 });
-                if (appDelete) {
-                    res.status(200).send(plan);
-                } else {
-                    res.status(500).send("error: it was not possible to delete the data.");
-                }
+                if (plan) {
+                    plan = plan.dataValues;
+                    let appDelete = await Customers.destroy({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    if (appDelete) {
+                        return res.status(200).json(plan);
+                    } else {
+                        return res.status(500).json("error: it was not possible to delete the data.");
+                    }
 
+                } else {
+                    return res.status(500).json("error: record does not exist");
+                }
             } else {
-                res.status(500).send("error: record does not exist");
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
-        /**
-     * deleteCustomers
-     * @param {Object} req
-     * @param {Object} res
-     * @method DELETE
-     * @route /plans
-     */
+    /**
+ * deleteCustomers
+ * @param {Object} req
+ * @param {Object} res
+ * @method DELETE
+ * @route /plans
+ */
     controller.deleteCustomers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let ids = req.body.id
-            for (let i = 0; i < ids.length; i++) {
-                await Customers.destroy({
-                    where: {
-                        id: ids[i]
-                    }
-                });
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                if (userValid.level !== 3) {
+                    return res.status(401).json({
+                        "message": "User cannot access this record"
+                    });
+                }
+                let ids = req.body.id
+                for (let i = 0; i < ids.length; i++) {
+                    await Customers.destroy({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                }
+                return res.status(200).json(ids);
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-            res.status(200).send(ids);
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 

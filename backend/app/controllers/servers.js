@@ -2,6 +2,7 @@ const auth = require("./auth");
 module.exports = function (app) {
     let controller = {};
     const Servers = app.models.servers;
+    const Users = app.models.users;
     const UsersSshKey = app.models.usersSshKey;
     const Auth = new auth(app);
 
@@ -13,39 +14,72 @@ module.exports = function (app) {
      * @route /servers
      */
     controller.getServers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let servers;
-            if (userValid.level == 3) {
-                servers = await Servers.findAll();
-                for (let i = 0; i < servers.length; i++) {
-                    let sshKey = await UsersSshKey.findOne({
-                        where: {
-                            id: servers[i].ssh_key_id
-                        }
-                    });
-                    servers[i].ssh_key_id = sshKey.name
-                }
-            } else if (userValid.level == 2) {
-                servers = await Servers.findAll({
-                    where: {
-                        id: userValid.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let servers;
+                if (userValid.level == 3) {
+                    servers = await Servers.findAll();
+                    for (let i = 0; i < servers.length; i++) {
+                        let sshKey = await UsersSshKey.findOne({
+                            where: {
+                                id: servers[i].ssh_key_id
+                            }
+                        });
+                        servers[i].ssh_key_id = sshKey.name
                     }
-                });
-                for (let i = 0; i < servers.length; i++) {
-                    let sshKey = await UsersSshKey.findOne({
+                } else if (userValid.level == 2) {
+
+                    let allServers = [];
+
+                    let users = await Users.findAll({
                         where: {
-                            id: servers[i].ssh_key_id
+                            customers_id: userValid.customers_id
                         }
                     });
-                    servers[i].ssh_key_id = sshKey.name
+
+                    for (let i = 0; i < users.length; i++) {
+                        let ServerPerUser = await Servers.findAll({
+                            where: {
+                                users_id: users[i].id
+                            }
+                        });
+                        for (let j = 0; j < ServerPerUser.length; j++) {
+                            allServers.push(ServerPerUser[j]);
+                        }
+                    }
+                    servers = allServers;
+
+                    for (let i = 0; i < servers.length; i++) {
+                        let sshKey = await UsersSshKey.findOne({
+                            where: {
+                                id: servers[i].ssh_key_id
+                            }
+                        });
+                        servers[i].ssh_key_id = sshKey.name
+                    }
+                } else {
+                    servers = await Servers.findAll({
+                        where: {
+                            users_id: userValid.id
+                        }
+                    });
+                    for (let i = 0; i < servers.length; i++) {
+                        let sshKey = await UsersSshKey.findOne({
+                            where: {
+                                id: servers[i].ssh_key_id
+                            }
+                        });
+                        servers[i].ssh_key_id = sshKey.name
+                    }
                 }
+                return res.status(200).json(servers)
             } else {
-                servers = [];
+                return res.status(401).json({ message: 'user invalid' })
             }
-            res.status(200).send(servers)
-        } else {
-            res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -57,63 +91,104 @@ module.exports = function (app) {
 * @route /servers/:id
 */
     controller.getServer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let servers = await Servers.findOne({
-                where: {
-                    id: req.params.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let servers;
+                if (userValid.level === 3) {
+                    servers = await Servers.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                } else if (userValid.level === 2) {
+                    servers = await Servers.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    let userServer = await Users.findOne({
+                        where: {
+                            id: servers.users_id
+                        }
+                    });
+                    if (userServer.customers_id !== userValid.customers_id) {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        })
+                    }
+                } else {
+                    servers = await Servers.findOne({
+                        where: {
+                            id: req.params.id,
+                            users_id: userValid.users_id
+                        }
+                    });
+                    if (servers === null || servers === undefined || servers === "") {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        });
+                    }
                 }
-            });
-            res.status(200).send(servers)
-        } else {
-            res.status(500).json("error: fail get servers")
+                return res.status(200).json(servers)
+            } else {
+                return res.status(500).json("error: fail get servers")
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
     /**
-     * addServer
+     * createServer
      * @param {Object} req
      * @param {Object} res
      * @method POST
      * @route /servers
      */
-    controller.addServer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        let msg;
-        if (userValid) {
+    controller.createServer = async (req, res) => {
+        try {
+            const userValid = await Auth.validaUser(req);
+            let msg;
+            if (userValid) {
 
-            let data = req.body;
-            let serverExist = await Servers.findOne({
-                where: {
-                    users_id: userValid.id,
-                    ip: data.ip
-                }
-            });
-            if (serverExist) {
-                msg = `The ip are already registered!!! ID: ${serverExist.dataValues.id}`
-                return res.status(500).send(msg)
-
-            } else {
-                let save = await Servers.create({
-                    users_id: userValid.id,
-                    name: data.name,
-                    ip: data.ip,
-                    ssh_key_id: data.ssh_key_id
+                let data = req.body;
+                let serverExist = await Servers.findOne({
+                    where: {
+                        users_id: userValid.id,
+                        ip: data.ip
+                    }
                 });
-                if (save) {
-                    let values = []
-                    values.push({
-                        id: save.id,
+                if (serverExist) {
+                    msg = `The ip are already registered!!! ID: ${serverExist.dataValues.id}`
+                    return res.status(500).json(msg)
+
+                } else {
+                    let save = await Servers.create({
                         users_id: userValid.id,
                         name: data.name,
                         ip: data.ip,
                         ssh_key_id: data.ssh_key_id
                     });
-                    return res.status(200).send(values)
+                    if (save) {
+                        let values = []
+                        values.push({
+                            id: save.id,
+                            users_id: userValid.id,
+                            name: data.name,
+                            ip: data.ip,
+                            ssh_key_id: data.ssh_key_id
+                        });
+                        return res.status(200).json(values)
+                    }
                 }
+            } else {
+                return res.status(401).json({ message: 'error: user invalid' })
             }
-        } else {
-            return res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -125,30 +200,58 @@ module.exports = function (app) {
  * @route /servers/:id
  */
     controller.updateServer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let data = req.body;
-            let save = await Servers.update({
-                name: data.name,
-                ip: data.ip,
-                ssh_key_id: data.ssh_key_id
-            }, {
-                where: {
-                    id: data.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let server = await Servers.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                if (userValid.id !== server.users_id) {
+                    if (userValid.level === 1) {
+                        return res.status(401).json({
+                            "message": "User cannot access this record"
+                        });
+                    } else if (userValid.level === 2) {
+                        let userServer = await Users.findOne({
+                            where: {
+                                id: server.users_id
+                            }
+                        });
+                        if (userServer.customers_id !== userValid.customers_id) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        }
+                    }
                 }
-            });
-            if (save) {
-                let values = []
-                values.push({
-                    id: data.id,
+                let data = req.body;
+                let save = await Servers.update({
                     name: data.name,
                     ip: data.ip,
                     ssh_key_id: data.ssh_key_id
+                }, {
+                    where: {
+                        id: data.id
+                    }
                 });
-                res.status(200).send(values);
+                if (save) {
+                    let values = []
+                    values.push({
+                        id: data.id,
+                        name: data.name,
+                        ip: data.ip,
+                        ssh_key_id: data.ssh_key_id
+                    });
+                    return res.status(200).json(values);
+                }
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -160,30 +263,53 @@ module.exports = function (app) {
 * @route /servers/:id
 */
     controller.deleteServer = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let server = await Servers.findOne({
-                where: {
-                    id: req.params.id
-                }
-            });
-            if (server) {
-                let serverDelete = await Servers.destroy({
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let server = await Servers.findOne({
                     where: {
                         id: req.params.id
                     }
                 });
-                if (serverDelete) {
-                    res.status(200).send(server);
-                } else {
-                    res.status(500).send("error: it was not possible to delete the data.");
-                }
+                if (server) {
+                    if (userValid.id !== server.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userServer = await Users.findOne({
+                                where: {
+                                    id: server.users_id
+                                }
+                            });
+                            if (userServer.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
+                    }
+                    let serverDelete = await Servers.destroy({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    if (serverDelete) {
+                        return res.status(200).json(server);
+                    } else {
+                        return res.status(500).json("error: it was not possible to delete the data.");
+                    }
 
+                } else {
+                    return res.status(500).json("error: record does not exist");
+                }
             } else {
-                res.status(500).send("error: record does not exist");
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -195,19 +321,47 @@ module.exports = function (app) {
  * @route /servers
  */
     controller.deleteServers = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let ids = req.body.id
-            for (let i = 0; i < ids.length; i++) {
-                await Servers.destroy({
-                    where: {
-                        id: ids[i]
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let ids = req.body.id
+                for (let i = 0; i < ids.length; i++) {
+                    let server = await Servers.findOne({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                    if (userValid.id !== server.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userServer = await Users.findOne({
+                                where: {
+                                    id: server.users_id
+                                }
+                            });
+                            if (userServer.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
                     }
-                });
+                    await Servers.destroy({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                }
+                return res.status(200).json(ids);
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-            res.status(200).send(ids);
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 

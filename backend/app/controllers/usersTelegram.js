@@ -2,6 +2,7 @@ const auth = require("./auth");
 module.exports = function (app) {
     let controller = {};
     const UsersTelegram = app.models.usersTelegram;
+    const Users = app.models.users;
     const Auth = new auth(app);
 
     /**
@@ -12,23 +13,47 @@ module.exports = function (app) {
      * @route /telegram
      */
     controller.getUsersTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let telegram;
-            if (userValid.level == 3) {
-                telegram = await UsersTelegram.findAll();
-            } else if (userValid.level == 2) {
-                telegram = await UsersTelegram.findAll({
-                    where: {
-                        id: userValid.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let telegram;
+                if (userValid.level == 3) {
+                    telegram = await UsersTelegram.findAll();
+                } else if (userValid.level == 2) {
+                    let allTelegram = [];
+
+                    let users = await Users.findAll({
+                        where: {
+                            customers_id: userValid.customers_id
+                        }
+                    });
+
+                    for (let i = 0; i < users.length; i++) {
+                        let telegramPerUser = await UsersTelegram.findAll({
+                            where: {
+                                users_id: users[i].id
+                            }
+                        });
+                        for (let j = 0; j < telegramPerUser.length; j++) {
+                            allTelegram.push(telegramPerUser[j]);
+                        }
                     }
-                });
+
+                    telegram = allTelegram
+                } else {
+                    telegram = await UsersTelegram.findAll({
+                        where: {
+                            users_id: userValid.id
+                        }
+                    });
+                }
+                return res.status(200).json(telegram)
             } else {
-                telegram = [];
+                return res.status(401).json({ message: 'error: user invalid' })
             }
-            res.status(200).send(telegram)
-        } else {
-            res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -40,16 +65,52 @@ module.exports = function (app) {
 * @route /telegram/:id
 */
     controller.getUserTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let servers = await UsersTelegram.findOne({
-                where: {
-                    id: req.params.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let telegram
+                if (userValid.level === 3) {
+                    telegram = await UsersTelegram.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                } else if (userValid.level === 2) {
+                    telegram = await UsersTelegram.findOne({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    let userTelegram = await Users.findOne({
+                        where: {
+                            id: telegram.users_id
+                        }
+                    });
+                    if (userTelegram.customers_id !== userValid.customers_id) {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        })
+                    }
+                } else {
+                    telegram = await UsersTelegram.findOne({
+                        where: {
+                            id: req.params.id,
+                            users_id: userValid.users_id
+                        }
+                    });
+                    if (telegram === null || telegram === undefined || telegram === "") {
+                        return res.status(401).json({
+                            message: "User cannot access this record "
+                        });
+                    }
                 }
-            });
-            res.status(200).send(servers)
-        } else {
-            res.status(500).json("error: fail get telegram")
+                return res.status(200).json(telegram)
+            } else {
+                return res.status(500).json("error: fail get telegram")
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -61,43 +122,48 @@ module.exports = function (app) {
      * @route /telegram
      */
     controller.createUserTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        let msg;
-        if (userValid) {
+        try {
+            const userValid = await Auth.validaUser(req);
+            let msg;
+            if (userValid) {
 
-            let data = req.body;
-            let channelExist = await UsersTelegram.findOne({
-                where: {
-                    users_id: userValid.id,
-                    telegram_channel_id: data.telegram_channel_id,
-                    message: data.message
-                }
-            });
-            if (channelExist) {
-                msg = `The Telegram channel id are already registered!!! ID: ${channelExist.dataValues.id}`
-                return res.status(500).send(msg)
-
-            } else {
-                let save = await UsersTelegram.create({
-                    users_id: userValid.id,
-                    name: data.name,
-                    telegram_channel_id: data.telegram_channel_id,
-                    message: data.message
+                let data = req.body;
+                let channelExist = await UsersTelegram.findOne({
+                    where: {
+                        users_id: userValid.id,
+                        telegram_channel_id: data.telegram_channel_id,
+                        message: data.message
+                    }
                 });
-                if (save) {
-                    let values = []
-                    values.push({
-                        id: save.id,
+                if (channelExist) {
+                    msg = `The Telegram channel id are already registered!!! ID: ${channelExist.dataValues.id}`
+                    return res.status(500).json(msg)
+
+                } else {
+                    let save = await UsersTelegram.create({
                         users_id: userValid.id,
                         name: data.name,
                         telegram_channel_id: data.telegram_channel_id,
                         message: data.message
                     });
-                    return res.status(200).send(values)
+                    if (save) {
+                        let values = []
+                        values.push({
+                            id: save.id,
+                            users_id: userValid.id,
+                            name: data.name,
+                            telegram_channel_id: data.telegram_channel_id,
+                            message: data.message
+                        });
+                        return res.status(200).json(values)
+                    }
                 }
+            } else {
+                return res.status(401).json({ message: 'error: user invalid' })
             }
-        } else {
-            return res.status(401).json({ message: 'error: user invalid' })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -109,30 +175,58 @@ module.exports = function (app) {
  * @route /telegram/:id
  */
     controller.updateUserTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let data = req.body;
-            let save = await UsersTelegram.update({
-                name: data.name,
-                telegram_channel_id: data.telegram_channel_id,
-                message: data.message
-            }, {
-                where: {
-                    id: data.id
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let data = req.body;
+                let telegram = await UsersTelegram.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                });
+                if (userValid.id !== telegram.users_id) {
+                    if (userValid.level === 1) {
+                        return res.status(401).json({
+                            "message": "User cannot access this record"
+                        });
+                    } else if (userValid.level === 2) {
+                        let userTelegram = await Users.findOne({
+                            where: {
+                                id: telegram.users_id
+                            }
+                        });
+                        if (userTelegram.customers_id !== userValid.customers_id) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        }
+                    }
                 }
-            });
-            if (save) {
-                let values = []
-                values.push({
-                    id: data.id,
+                let save = await UsersTelegram.update({
                     name: data.name,
                     telegram_channel_id: data.telegram_channel_id,
                     message: data.message
+                }, {
+                    where: {
+                        id: data.id
+                    }
                 });
-                res.status(200).send(values);
+                if (save) {
+                    let values = []
+                    values.push({
+                        id: data.id,
+                        name: data.name,
+                        telegram_channel_id: data.telegram_channel_id,
+                        message: data.message
+                    });
+                    return res.status(200).json(values);
+                }
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -144,30 +238,53 @@ module.exports = function (app) {
 * @route /telegram/:id
 */
     controller.deleteUserTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let telegram = await UsersTelegram.findOne({
-                where: {
-                    id: req.params.id
-                }
-            });
-            if (telegram) {
-                let telegramDelete = await UsersTelegram.destroy({
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let telegram = await UsersTelegram.findOne({
                     where: {
                         id: req.params.id
                     }
                 });
-                if (telegramDelete) {
-                    res.status(200).send(telegram);
-                } else {
-                    res.status(500).send("error: it was not possible to delete the data.");
-                }
+                if (telegram) {
+                    if (userValid.id !== telegram.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userTelegram = await Users.findOne({
+                                where: {
+                                    id: telegram.users_id
+                                }
+                            });
+                            if (userTelegram.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
+                    }
+                    let telegramDelete = await UsersTelegram.destroy({
+                        where: {
+                            id: req.params.id
+                        }
+                    });
+                    if (telegramDelete) {
+                        return res.status(200).json(telegram);
+                    } else {
+                        return res.status(500).json("error: it was not possible to delete the data.");
+                    }
 
+                } else {
+                    return res.status(500).json("error: record does not exist");
+                }
             } else {
-                res.status(500).send("error: record does not exist");
+                return res.status(401).json("error: user invalid");
             }
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
@@ -179,19 +296,47 @@ module.exports = function (app) {
  * @route /telegram
  */
     controller.deleteUsersTelegram = async (req, res) => {
-        const userValid = await Auth.validaUser(req);
-        if (userValid) {
-            let ids = req.body.id
-            for (let i = 0; i < ids.length; i++) {
-                await UsersTelegram.destroy({
-                    where: {
-                        id: ids[i]
+        try {
+            const userValid = await Auth.validaUser(req);
+            if (userValid) {
+                let ids = req.body.id
+                for (let i = 0; i < ids.length; i++) {
+                    let telegram = await UsersTelegram.findOne({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                    if (userValid.id !== telegram.users_id) {
+                        if (userValid.level === 1) {
+                            return res.status(401).json({
+                                "message": "User cannot access this record"
+                            });
+                        } else if (userValid.level === 2) {
+                            let userTelegram = await Users.findOne({
+                                where: {
+                                    id: telegram.users_id
+                                }
+                            });
+                            if (userTelegram.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    "message": "User cannot access this record"
+                                });
+                            }
+                        }
                     }
-                });
+                    await UsersTelegram.destroy({
+                        where: {
+                            id: ids[i]
+                        }
+                    });
+                }
+                return res.status(200).json(ids);
+            } else {
+                return res.status(401).json("error: user invalid");
             }
-            res.status(200).send(ids);
-        } else {
-            res.status(401).send("error: user invalid");
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(error)
         }
     }
 
