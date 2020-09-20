@@ -3,6 +3,8 @@ const auth = require('./auth');
 module.exports = function (app) {
     let controller = {};
     const Applications = app.models.aplications;
+    const Telegram = app.models.usersTelegram;
+    const Triggers = app.models.triggers;
     const Auth = new auth(app);
 
     /**
@@ -15,11 +17,50 @@ module.exports = function (app) {
     controller.getApplications = async (req, res) => {
         const userValid = await Auth.validaUser(req);
         if (userValid) {
-            let applications = await Applications.findAll({
-                where: {
-                    users_id: userValid.id
+            let applications;
+            if (userValid.level === 3) {
+                applications = await Applications.findAll();
+                for (let i = 0; i < applications.length; i++) {
+                    let element = applications[i];
+                    let telegram = await Telegram.findOne({
+                        attributes: ['name'],
+                        where: {
+                            id: element.users_telegram_id
+                        }
+                    });
+                    let trigger = await Triggers.findOne({
+                        attributes: ['name'],
+                        where: {
+                            id: element.triggers_id
+                        }
+                    });
+                    element.triggers_id = trigger.name
+                    element.users_telegram_id = telegram.name;
                 }
-            });
+            } else if (userValid.level === 2) {
+                applications = await Applications.findAll({
+                    where: {
+                        id: userValid.customers_id
+                    }
+                });
+                for (let i = 0; i < applications.length; i++) {
+                    let element = applications[i];
+                    let telegram = await Telegram.findOne({
+                        attributes: ['name'],
+                        where: {
+                            id: element.users_telegram_id
+                        }
+                    });
+                    let trigger = await Triggers.findOne({
+                        attributes: ['name'],
+                        where: {
+                            id: element.triggers_id
+                        }
+                    });
+                    element.triggers_id = trigger.name
+                    element.users_telegram_id = telegram.name;
+                }
+            }
             res.status(200).send(applications)
         } else {
             res.status(500).json("error: fail get applications")
@@ -100,7 +141,7 @@ module.exports = function (app) {
             } else {
                 let salvo = await Applications.create({
                     users_id: userValid.id,
-                    description: req.body.description,
+                    name: req.body.name,
                     protocol: req.body.protocol,
                     url: url,
                     ip: ip,
@@ -110,7 +151,7 @@ module.exports = function (app) {
                     let values = []
                     values.push({
                         id: salvo.dataValues.id,
-                        description: req.body.description,
+                        name: req.body.name,
                         protocol: req.body.protocol,
                         url: url,
                         ip: ip,
@@ -165,7 +206,7 @@ module.exports = function (app) {
                 res.status(406).json(msg)
             } else {
                 let save = await Applications.update({
-                    description: data.description,
+                    name: data.name,
                     protocol: data.protocol,
                     url: data.url,
                     ip: data.ip,
@@ -179,7 +220,7 @@ module.exports = function (app) {
                     let values = []
                     values.push({
                         id: data.id,
-                        description: data.description,
+                        name: data.name,
                         protocol: data.protocol,
                         url: data.url,
                         ip: data.ip,

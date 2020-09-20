@@ -1,5 +1,6 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, PasswordInput, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { useMediaQuery } from '@material-ui/core';
 
 const ServersTitle = ({ record }) => {
     return <span>Edit server: {record ? `"${record.name}"` : ''}</span>;
@@ -9,20 +10,29 @@ const ServersFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="name" alwaysOn />
         <ReferenceInput label="Servers" source="name" reference="servers" allowEmpty>
-            <SelectInput optionText="description" />
+            <SelectInput optionText="name" />
         </ReferenceInput>
     </Filter>
 );
 
 export const ServersList = (props) => {
+    const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
     return (<List filters={<ServersFilter />} {...props}>
-        <Datagrid rowClick="edit">
+        {isSmall ? (
+            <Datagrid>
             <TextField source="id" />
-            <TextField source="description" />
-            <TextField source="ip" />
-            <TextField source="ssh_key" />
+            <TextField source="name" />
             <EditButton />
         </Datagrid>
+        ) : (
+        <Datagrid>
+            <TextField source="id" />
+            <TextField source="name" />
+            <TextField source="ip" />
+            <TextField source="ssh_key_id" />
+            <EditButton />
+        </Datagrid>
+        )}
     </List>
     )
 }
@@ -31,9 +41,11 @@ export const ServersEdit = props => (
     <Edit title={<ServersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="description" />
+            <TextInput source="name" />
             <TextInput source="ip" />
-            <TextInput source="ssh_key" />
+            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key">
+                <SelectInput optionText="name" />
+            </ReferenceInput>
         </SimpleForm>
     </Edit>
 );
@@ -41,9 +53,11 @@ export const ServersEdit = props => (
 export const ServersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="description" />
+            <TextInput source="name" />
             <TextInput source="ip" />
-            <TextInput source="ssh_key" />
+            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key">
+                <SelectInput optionText="name" />
+            </ReferenceInput>
         </SimpleForm>
     </Create>
 );

@@ -7,7 +7,11 @@ module.exports = function (app) {
 			autoIncrement: true,
 			primaryKey: true,
 			allowNull: false
-        },
+		},
+		name: {
+			type: Sequelize.STRING(255),
+			allowNull: false
+		},
         users_id: {
             type: Sequelize.INTEGER,
             allowNull: false,
@@ -20,6 +24,14 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
+		key_name: {
+			type: Sequelize.STRING(255),
+			allowNull: false
+		},
+		expiration_date: {
+			type: Sequelize.DATE,
+			allowNull: false
+		}
 	}, {
 		createdAt: false,
 		updatedAt: false,

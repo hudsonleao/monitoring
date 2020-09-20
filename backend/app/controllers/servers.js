@@ -2,6 +2,7 @@ const auth = require("./auth");
 module.exports = function (app) {
     let controller = {};
     const Servers = app.models.servers;
+    const UsersSshKey = app.models.usersSshKey;
     const Auth = new auth(app);
 
     /**
@@ -18,8 +19,12 @@ module.exports = function (app) {
             if (userValid.level == 3) {
                 servers = await Servers.findAll();
                 for (let i = 0; i < servers.length; i++) {
-                    let ssh_key = servers[i].ssh_key.split(" ")
-                    servers[i].ssh_key = ssh_key[2];
+                    let sshKey = await UsersSshKey.findOne({
+                        where: {
+                            id: servers[i].ssh_key_id
+                        }
+                    });
+                    servers[i].ssh_key_id = sshKey.name
                 }
             } else if (userValid.level == 2) {
                 servers = await Servers.findAll({
@@ -28,9 +33,12 @@ module.exports = function (app) {
                     }
                 });
                 for (let i = 0; i < servers.length; i++) {
-                    let ssh_key = servers[i].ssh_key.split(" ")
-                    servers[i].ssh_key = ssh_key[2];
-                    servers[i].ssh_key = ssh_key+ "...";
+                    let sshKey = await UsersSshKey.findOne({
+                        where: {
+                            id: servers[i].ssh_key_id
+                        }
+                    });
+                    servers[i].ssh_key_id = sshKey.name
                 }
             } else {
                 servers = [];
@@ -88,18 +96,18 @@ module.exports = function (app) {
             } else {
                 let save = await Servers.create({
                     users_id: userValid.id,
-                    description: data.description,
+                    name: data.name,
                     ip: data.ip,
-                    ssh_key: data.ssh_key
+                    ssh_key_id: data.ssh_key_id
                 });
                 if (save) {
                     let values = []
                     values.push({
                         id: save.id,
                         users_id: userValid.id,
-                        description: data.description,
+                        name: data.name,
                         ip: data.ip,
-                        ssh_key: data.ssh_key
+                        ssh_key_id: data.ssh_key_id
                     });
                     return res.status(200).send(values)
                 }
@@ -121,9 +129,9 @@ module.exports = function (app) {
         if (userValid) {
             let data = req.body;
             let save = await Servers.update({
-                description: data.description,
+                name: data.name,
                 ip: data.ip,
-                ssh_key: data.ssh_key
+                ssh_key_id: data.ssh_key_id
             }, {
                 where: {
                     id: data.id
@@ -133,9 +141,9 @@ module.exports = function (app) {
                 let values = []
                 values.push({
                     id: data.id,
-                    description: data.description,
+                    name: data.name,
                     ip: data.ip,
-                    ssh_key: data.ssh_key
+                    ssh_key_id: data.ssh_key_id
                 });
                 res.status(200).send(values);
             }

@@ -88,10 +88,18 @@ export default {
             headers: new Headers(header),
         }).catch((error) => {
             let erro;
-            if (error.status === 406) {
-                erro = "Url or ip is registered."
-            } else if (error.status === 401) {
+
+            if (error.status === 401) {
                 erro = "User invalid"
+            }
+            if (resource === "servers") {
+                if (error.status === 406) {
+                    erro = "Url or ip is registered."
+                }
+            } else if (resource === "sshkey"){
+                if (error.status === 406) {
+                    erro = "Description is registered."
+                }
             }
             throw erro;
         }).then(({ json }) => ({ data: json })),
@@ -113,10 +121,17 @@ export default {
             headers: new Headers(header),
         }).catch((error) => {
             let erro;
-            if (error.status === 406) {
-                erro = "Url or ip is registered."
-            } else if (error.status === 401) {
+            if (error.status === 401) {
                 erro = "User invalid"
+            }
+            if (resource === "servers") {
+                if (error.status === 406) {
+                    erro = "Url or ip is registered."
+                }
+            } else if (resource === "sshkey"){
+                if (error.status === 406) {
+                    erro = "Description is registered."
+                }
             }
             throw erro;
         }).then(({ json }) => ({

@@ -16,7 +16,7 @@ module.exports = function (app) {
                 key: 'id'
             }
         },
-		description: {
+		name: {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
@@ -24,9 +24,13 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: false
         },
-        ssh_key: {
-			type: Sequelize.STRING(500),
-			allowNull: false
+        ssh_key_id: {
+			type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users_ssh_key',
+                key: 'id'
+            }
 		},
 	}, {
 

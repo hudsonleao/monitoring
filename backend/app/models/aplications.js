@@ -17,10 +17,26 @@ module.exports = function (app) {
                 key: 'id'
             }
         },
-		description: {
+		name: {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
+		users_telegram_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users_telegram',
+                key: 'id'
+            }
+		},
+		triggers_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'triggers',
+                key: 'id'
+            }
+        },
 		protocol: {
 			type: Sequelize.STRING(5),
 			allowNull: false

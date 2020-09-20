@@ -1,9 +1,10 @@
 module.exports = function (app) {
     const controller = app.controllers.usersSshKey;
-    app.route("/sshkey")
+    app.route("/ssh_key")
         .get(controller.getUsersSshKey)
         .post(controller.createUserSshKey)
-    app.route("/sshkey/:id")
+        .delete(controller.deleteUsersSshKey)
+    app.route("/ssh_key/:id")
         .get(controller.getUserSshKey)
         .put(controller.updateUserSshKey)
         .delete(controller.deleteUserSshKey)

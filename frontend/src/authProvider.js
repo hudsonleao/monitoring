@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 let apiUrl;
-if(process.env.NODE_ENV === "development"){
+if (process.env.NODE_ENV === "development") {
     apiUrl = "http://localhost:8065"
 } else {
     apiUrl = "https://service.monitoramos.com.br"
@@ -11,9 +11,9 @@ export default {
     // called when the user attempts to log in
     login: async ({ username, password }) => {
 
-        const { data } = await axios.get(`${apiUrl}/jwt`,{ headers:{
-            'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf'
-        }});
+        const { data } = await axios.get(`${apiUrl}/jwt`, {
+            headers: { 'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf' }
+        });
         localStorage.setItem('token', data.token);
 
         let params = {
@@ -23,18 +23,18 @@ export default {
         const headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${data.token}`
-          }
+        }
 
         const consulta = await axios.post(`${apiUrl}/login`, params, {
             headers: headers
-          });
+        });
         let secret = consulta.data.secret
-          
+
 
         if (consulta.status === 200) {
             localStorage.setItem('username', username);
             localStorage.setItem('secret', secret);
-            
+
 
         }
     },

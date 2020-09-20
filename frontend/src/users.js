@@ -1,5 +1,6 @@
 import * as React from "react";
 import { List, Edit, Filter, Create, PasswordInput, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { useMediaQuery } from '@material-ui/core';
 
 const UsersTitle = ({ record }) => {
     return <span>Edit user: {record ? `"${record.name}"` : ''}</span>;
@@ -15,13 +16,22 @@ const UsersFilter = (props) => (
 );
 
 export const UsersList = (props) => {
+    const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
     return (<List filters={<UsersFilter />} {...props}>
-        <Datagrid rowClick="edit">
-            <TextField source="id" />
-            <TextField source="name" />
-            <TextField source="user" />
-            <EditButton />
-        </Datagrid>
+        {isSmall ? (
+            <Datagrid>
+                <TextField source="id" />
+                <TextField source="name" />
+                <EditButton />
+            </Datagrid>
+        ) : (
+                <Datagrid>
+                    <TextField source="id" />
+                    <TextField source="name" />
+                    <TextField source="user" />
+                    <EditButton />
+                </Datagrid>
+            )}
     </List>
     )
 }
@@ -42,7 +52,7 @@ export const UsersEdit = props => (
 export const UsersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-        <TextInput source="name" />
+            <TextInput source="name" />
             <TextInput source="user" />
             <PasswordInput source="password" />
             <ReferenceInput label="Level" source="level" reference="userslevel">
