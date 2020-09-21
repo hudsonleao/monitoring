@@ -21,9 +21,10 @@ module.exports = function () {
     
     app.get('/jwt', (req, res) => {
         if(req.headers.token === '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf'){
-        const token = jsonwebtoken.sign({ user: 'hudson' }, jwtSecret, {
+        let token = jsonwebtoken.sign({ user: 'hudson' }, jwtSecret, {
                 expiresIn: '24h' // expires in 24 hours
         });
+        token = token.split('');
         res.cookie('token', token, { httpOnly: true });
         res.json({ token });
         } else {
