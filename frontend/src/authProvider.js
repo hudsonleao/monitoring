@@ -14,7 +14,7 @@ export default {
         const { data } = await axios.get(`${apiUrl}/jwt`, {
             headers: { 'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf' }
         });
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.token.split(''));
 
         let params = {
             user: username,
