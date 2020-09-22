@@ -14,7 +14,7 @@ export default {
         const { data } = await axios.get(`${apiUrl}/jwt`, {
             headers: { 'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf' }
         });
-        localStorage.setItem('token', data.token.split(''));
+        localStorage.setItem('token', data.token);
 
         let params = {
             user: username,
@@ -29,12 +29,13 @@ export default {
             headers: headers
         });
         let secret = consulta.data.secret
-
+        console.log(consulta.data.permission)
+        let permission = consulta.data.permission
 
         if (consulta.status === 200) {
             localStorage.setItem('username', username);
             localStorage.setItem('secret', secret);
-
+            localStorage.setItem('permission', permission);
 
         }
     },
@@ -42,7 +43,8 @@ export default {
     logout: () => {
         localStorage.removeItem('username');
         localStorage.removeItem('secret');
-        localStorage.removeItem('token')
+        localStorage.removeItem('token');
+        localStorage.removeItem('permission');
         return Promise.resolve();
     },
     // called when the API returns an error
@@ -54,6 +56,7 @@ export default {
             localStorage.removeItem('username');
             localStorage.removeItem('secret');
             localStorage.removeItem('token')
+            localStorage.removeItem('permission');
             return Promise.reject();
         }
         return Promise.resolve();
@@ -65,5 +68,8 @@ export default {
             : Promise.reject();
     },
     // called when the user navigates to a new location, to check for permissions / roles
-    getPermissions: () => Promise.resolve(),
+    getPermissions: () => {
+        const role = localStorage.getItem('permission');
+        return role ? Promise.resolve(role) : Promise.reject();
+    }
 };

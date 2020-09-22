@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Admin, Resource, Login} from 'react-admin';
+import { Admin, Resource, Login } from 'react-admin';
 import { ApplicationsList, ApplicationsEdit, ApplicationsCreate } from './applications';
 import { PlansList, PlansEdit, PlansCreate } from './plans';
 import { CustomersList, CustomersEdit, CustomersCreate } from './customers';
@@ -24,22 +24,29 @@ import TriggersIcon from '@material-ui/icons/SettingsEthernet';
 
 const MyLoginPage = () => (
   <Login
-      backgroundImage="https://newevolutiondesigns.com/images/freebies/tech-wallpaper-2.jpg"
+    backgroundImage="https://newevolutiondesigns.com/images/freebies/tech-wallpaper-2.jpg"
   />
 );
 
 const App = () => (
-
   <Admin loginPage={MyLoginPage} dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
-    <Resource name="applications" list={ApplicationsList} edit={ApplicationsEdit} create={ApplicationsCreate} icon={ApplicationsIcon} />
-    <Resource name="plans" list={PlansList} edit={PlansEdit} create={PlansCreate} icon={PlansIcon} />
-    <Resource name="customers" list={CustomersList} edit={CustomersEdit} create={CustomersCreate} icon={CustomersIcon} />
-    <Resource name="users" list={UsersList} edit={UsersEdit} create={UsersCreate} icon={UsersIcon} />
-    <Resource name="userslevel"/>
-    <Resource name="servers" list={ServersList} edit={ServersEdit} create={ServersCreate} icon={ServersIcon} />
-    <Resource name="ssh_key" list={SshKeyList} edit={SshKeyEdit} create={SshKeyCreate} icon={SshKeyIcon} />
-    <Resource name="telegram" list={TelegramList} edit={TelegramEdit} create={TelegramCreate} icon={TelegramIcon} />
-    <Resource name="triggers" list={TriggersList} edit={TriggersEdit} create={TriggersCreate} icon={TriggersIcon} />
+    {permission => [
+      <Resource name="applications" list={ApplicationsList} edit={ApplicationsEdit} create={ApplicationsCreate} icon={ApplicationsIcon} />,
+      permission === 'super_admin'
+        ? <Resource name="plans" list={PlansList} edit={PlansEdit} create={PlansCreate} icon={PlansIcon} />
+        : null,
+      permission === 'super_admin'
+        ? <Resource name="customers" list={CustomersList} edit={CustomersEdit} create={CustomersCreate} icon={CustomersIcon} />
+        : null,
+        permission === 'normal'
+        ? null
+        : <Resource name="users" list={UsersList} edit={UsersEdit} create={UsersCreate} icon={UsersIcon} />,
+      <Resource name="userslevel" />,
+      <Resource name="servers" list={ServersList} edit={ServersEdit} create={ServersCreate} icon={ServersIcon} />,
+      <Resource name="ssh_key" list={SshKeyList} edit={SshKeyEdit} create={SshKeyCreate} icon={SshKeyIcon} />,
+      <Resource name="telegram" list={TelegramList} edit={TelegramEdit} create={TelegramCreate} icon={TelegramIcon} />,
+      <Resource name="triggers" list={TriggersList} edit={TriggersEdit} create={TriggersCreate} icon={TriggersIcon} />,
+    ]}
   </Admin>
 );
 

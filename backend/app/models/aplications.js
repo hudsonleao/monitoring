@@ -41,12 +41,8 @@ module.exports = function (app) {
 			type: Sequelize.STRING(5),
 			allowNull: false
 		},
-		url: {
+		url_or_ip: {
 			type: Sequelize.STRING(255),
-			allowNull: true
-		},
-		ip: {
-			type: Sequelize.STRING(14),
 			allowNull: true
 		},
 		port: {

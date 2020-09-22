@@ -20,23 +20,33 @@ module.exports = function (app) {
             const userValid = await Auth.validaUser(req);
             if (userValid) {
                 let applications;
+                let telegram;
+                let trigger
                 if (userValid.level === 3) {
                     applications = await Applications.findAll();
                     for (let i = 0; i < applications.length; i++) {
-                        let telegram = await Telegram.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: applications[i].users_telegram_id
+                        if (applications[i].users_telegram_id) {
+                            telegram = await Telegram.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: applications[i].users_telegram_id
+                                }
+                            });
+                            if (telegram) {
+                                applications[i].users_telegram_id = telegram.name;
                             }
-                        });
-                        let trigger = await Triggers.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: applications[i].triggers_id
+                        }
+                        if (applications[i].users_telegram_id) {
+                            trigger = await Triggers.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: applications[i].triggers_id
+                                }
+                            });
+                            if (trigger) {
+                                applications[i].triggers_id = trigger.name
                             }
-                        });
-                        applications[i].triggers_id = trigger.name
-                        applications[i].users_telegram_id = telegram.name;
+                        }
                     }
                 } else if (userValid.level === 2) {
                     let allApplications = [];
@@ -58,24 +68,27 @@ module.exports = function (app) {
                         }
                     }
                     for (let i = 0; i < allApplications.length; i++) {
-                        let telegram = await Telegram.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: allApplications[i].users_telegram_id
+                        if (applications[i].users_telegram_id) {
+                            telegram = await Telegram.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: allApplications[i].users_telegram_id
+                                }
+                            });
+                            if (telegram) {
+                                allApplications[i].users_telegram_id = telegram.name;
                             }
-                        });
-                        let trigger = await Triggers.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: allApplications[i].triggers_id
-                            }
-                        });
-
-                        if (trigger) {
-                            allApplications[i].triggers_id = trigger.name
                         }
-                        if (telegram) {
-                            allApplications[i].users_telegram_id = telegram.name;
+                        if (applications[i].triggers_id) {
+                            trigger = await Triggers.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: allApplications[i].triggers_id
+                                }
+                            });
+                            if (trigger) {
+                                allApplications[i].triggers_id = trigger.name
+                            }
                         }
                     }
                     applications = allApplications
@@ -87,20 +100,28 @@ module.exports = function (app) {
                     });
 
                     for (let i = 0; i < applications.length; i++) {
-                        let telegram = await Telegram.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: applications[i].users_telegram_id
+                        if (applications[i].users_telegram_id) {
+                            telegram = await Telegram.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: applications[i].users_telegram_id
+                                }
+                            });
+                            if (telegram) {
+                                applications[i].users_telegram_id = telegram.name;
                             }
-                        });
-                        let trigger = await Triggers.findOne({
-                            attributes: ['name'],
-                            where: {
-                                id: applications[i].triggers_id
+                        }
+                        if (applications[i].users_telegram_id) {
+                            trigger = await Triggers.findOne({
+                                attributes: ['name'],
+                                where: {
+                                    id: applications[i].triggers_id
+                                }
+                            });
+                            if (trigger) {
+                                applications[i].triggers_id = trigger.name;
                             }
-                        });
-                        applications[i].triggers_id = trigger.name
-                        applications[i].users_telegram_id = telegram.name;
+                        }
                     }
                 }
                 return res.status(200).json(applications)
@@ -114,12 +135,12 @@ module.exports = function (app) {
     }
 
     /**
- * index
- * @param {Object} req
- * @param {Object} res
- * @method GET
- * @route /applications/:id
- */
+    * index
+    * @param {Object} req
+    * @param {Object} res
+    * @method GET
+    * @route /applications/:id
+    */
     controller.getApplication = async (req, res) => {
         try {
             const userValid = await Auth.validaUser(req);
@@ -181,54 +202,30 @@ module.exports = function (app) {
         try {
             const userValid = await Auth.validaUser(req);
             let msg = "";
-            let url;
-            let ip;
             let data = req.body
             if (userValid) {
 
-                if (data.url) {
-                    url = data.url.replace("https://", "").replace("http://", "");
-                }
-                if (data.ip) {
-                    ip = data.ip.replace("https://", "").replace("http://", "");
-                }
-                let urlExist;
-                let ipExist;
-                if (url) {
-                    urlExist = await Applications.findOne({
+                let urlOrPort = data.url_or_ip.replace("https://", "").replace("http://", "");
+
+                let urlOrPortExist;
+                if (urlOrPort) {
+                    urlOrPortExist = await Applications.findOne({
                         where: {
                             users_id: userValid.id,
                             users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
                             triggers_id: data.triggers_id ? data.triggers_id : null,
-                            url: url,
+                            url_or_ip: urlOrPort,
                             port: data.port ? data.port : null,
                             protocol: data.protocol
                         }
                     });
                 }
-                if (ip) {
-                    ipExist = await Applications.findOne({
-                        where: {
-                            users_id: userValid.id,
-                            users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
-                            triggers_id: data.triggers_id ? data.triggers_id : null,
-                            ip: ip,
-                            port: data.port ? data.port : null,
-                            protocol: data.protocol
-                        }
-                    });
-                }
-                if (urlExist) {
-                    msg = `The url and port are already registered!!! ID: ${urlExist.id}`
+                if (urlOrPortExist) {
+                    msg = `The url or ip and port are already registered!!! ID: ${urlOrPortExist.id}`
                     return res.status(406).json({
                         "message": msg
                     });
 
-                } else if (ipExist) {
-                    msg = `The ip and port are already registered!!! ID: ${ipExist.id}`
-                    return res.status(406).json({
-                        "message": msg
-                    });
                 } else {
                     let save = await Applications.create({
                         users_id: userValid.id,
@@ -236,8 +233,7 @@ module.exports = function (app) {
                         users_telegram_id: data.users_telegram_id,
                         triggers_id: data.triggers_id,
                         protocol: data.protocol,
-                        url: url,
-                        ip: ip,
+                        url_or_ip: urlOrPort,
                         port: data.port
                     });
                     if (save) {
@@ -248,8 +244,7 @@ module.exports = function (app) {
                             users_telegram_id: data.users_telegram_id,
                             triggers_id: data.triggers_id,
                             protocol: data.protocol,
-                            url: url,
-                            ip: ip,
+                            url_or_ip: urlOrPort,
                             port: data.port
                         });
                         return res.status(200).json(values);
@@ -277,12 +272,7 @@ module.exports = function (app) {
             let msg;
             if (userValid) {
                 let data = req.body;
-                if (data.url) {
-                    data.url = data.url.replace("https://", "").replace("http://", "");
-                }
-                if (data.ip) {
-                    data.ip = data.ip.replace("https://", "").replace("http://", "");
-                }
+                data.url_or_ip = data.url_or_ip.replace("https://", "").replace("http://", "");
 
                 let application = await Applications.findOne({
                     where: {
@@ -307,38 +297,18 @@ module.exports = function (app) {
                         }
                     }
                 }
-                let urlExist;
-                let ipExist;
-                if (data.url) {
-                    urlExist = await Applications.findOne({
-                        where: {
-                            url: data.url,
-                            users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
-                            triggers_id: data.triggers_id ? data.triggers_id : null,
-                            port: req.body.port ? req.body.port : null,
-                            protocol: data.protocol
-                        }
-                    });
-                }
-                if (data.ip) {
-                    ipExist = await Applications.findOne({
-                        where: {
-                            ip: data.ip,
-                            users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
-                            triggers_id: data.triggers_id ? data.triggers_id : null,
-                            port: req.body.port ? req.body.port : null,
-                            protocol: data.protocol
-                        }
-                    });
-                }
-                if (urlExist && urlExist.dataValues.id !== data.id) {
-                    msg = `The url and port are already registered!!! ID: ${urlExist.dataValues.id}`
-                    return res.status(406).json({
-                        "message": msg
-                    });
-
-                } else if (ipExist && ipExist.dataValues.id !== data.id) {
-                    msg = `The ip and port are already registered!!! ID: ${ipExist.dataValues.id}`
+                let urlOrPortExist;
+                urlOrPortExist = await Applications.findOne({
+                    where: {
+                        url_or_ip: data.url_or_ip,
+                        users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
+                        triggers_id: data.triggers_id ? data.triggers_id : null,
+                        port: req.body.port ? req.body.port : null,
+                        protocol: data.protocol
+                    }
+                });
+                if (urlOrPortExist && urlOrPortExist.dataValues.id !== data.id) {
+                    msg = `The url or ip and port are already registered!!! ID: ${urlOrPortExist.dataValues.id}`
                     return res.status(406).json({
                         "message": msg
                     });
@@ -348,8 +318,7 @@ module.exports = function (app) {
                         protocol: data.protocol,
                         users_telegram_id: data.users_telegram_id,
                         triggers_id: data.triggers_id,
-                        url: data.url,
-                        ip: data.ip,
+                        url_or_ip: data.url_or_ip,
                         port: data.port
                     }, {
                         where: {
@@ -364,12 +333,12 @@ module.exports = function (app) {
                             users_telegram_id: data.users_telegram_id,
                             triggers_id: data.triggers_id,
                             protocol: data.protocol,
-                            url: data.url,
-                            ip: data.ip,
+                            url_or_ip: data.url_or_ip,
                             port: data.port
                         });
                         return res.status(200).json(values);
                     }
+
                 }
             } else {
                 return res.status(401).json({

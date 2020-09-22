@@ -1,5 +1,5 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, FunctionField, DateField, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { List, Edit, Filter, Create, FunctionField, DateField, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const ApplicationsTitle = ({ record }) => {
@@ -70,7 +70,7 @@ export const ApplicationsEdit = props => (
     <Edit title={<ApplicationsTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <ReferenceInput label="Telegram" source="users_telegram_id" reference="telegram">
                 <SelectInput optionText="name" />
             </ReferenceInput>
@@ -80,9 +80,8 @@ export const ApplicationsEdit = props => (
             <SelectInput source="protocol" choices={[
                 { id: 'https', name: 'https' },
                 { id: 'http', name: 'http' },
-            ]} />
-            <TextInput source="url" />
-            <TextInput source="ip" />
+            ]} validate={[required()]}/>
+            <TextInput source="url_or_ip" validate={[required()]} />
             <TextInput source="port" />
         </SimpleForm>
     </Edit>
@@ -91,7 +90,7 @@ export const ApplicationsEdit = props => (
 export const ApplicationsCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <ReferenceInput label="Telegram" source="users_telegram_id" reference="telegram">
                 <SelectInput optionText="name" />
             </ReferenceInput>
@@ -101,9 +100,8 @@ export const ApplicationsCreate = props => (
             <SelectInput source="protocol" choices={[
                 { id: 'https', name: 'https' },
                 { id: 'http', name: 'http' },
-            ]} />
-            <TextInput source="url" />
-            <TextInput source="ip" />
+            ]} validate={[required()]}/>
+            <TextInput source="url_or_ip" validate={[required()]} />
             <TextInput source="port" />
         </SimpleForm>
     </Create>

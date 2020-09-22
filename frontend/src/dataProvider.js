@@ -15,7 +15,7 @@ let token = localStorage.getItem('token');
 
 let header = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token.split('')}`,
+    'Authorization': `Bearer ${token}`,
     'user': user,
     'secret': secret
 }

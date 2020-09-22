@@ -9,7 +9,7 @@ const cors = require('cors');
 
 module.exports = function () {
     let app = express();
-    const jwtSecret = '@2423rWFq21fdEr3awr@2534$%34dsfsdfwead@443r';
+    const jwtSecret = '@2423rWFq21fdEr3awr';
     app.debug = process.env.NODE_DEBUG || false;
     app.sequelize = sequelize.getConnection();
     app.use(bodyParser.json());
@@ -22,7 +22,7 @@ module.exports = function () {
     app.get('/jwt', (req, res) => {
         if(req.headers.token === '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf'){
         const token = jsonwebtoken.sign({ user: 'hudsonleao' }, jwtSecret, {
-                expiresIn: '24h' // expires in 24 hours
+                expiresIn: '1d'
         });
         res.cookie('token', token, { httpOnly: true });
         res.json({ token });
@@ -38,9 +38,5 @@ module.exports = function () {
         .then("controllers")
         .then("routes")
         .into(app);
-    
-        
-        
-
     return app;
 };

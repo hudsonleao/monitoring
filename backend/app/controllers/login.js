@@ -24,15 +24,24 @@ module.exports = function (app) {
             password = crypto.createHash('md5').update(password).digest("hex");
             let secret = crypto.createHash('sha1').update(password).digest("hex");
 
-            const userExist = await Users.findAll({
+            const userExist = await Users.findOne({
                 where: {
                     user: user,
                     password: password
                 }
             });
 
-            if (userExist[0]) {
-                return res.status(200).json({ message: 'exist', secret: secret });
+            let permission;
+            if(userExist.level == 3){
+                permission = "super_admin"
+            } else if(userExist.level == 2){
+                permission = "admin"
+            } else {
+                permission = "normal"
+            }
+
+            if (userExist) {
+                return res.status(200).json({ message: 'exist', secret: secret , permission: permission});
             } else {
                 return res.status(500).json({ message: 'incorrect' });
             }
