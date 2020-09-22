@@ -1,5 +1,5 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required} from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const ServersTitle = ({ record }) => {
