@@ -41,9 +41,9 @@ export const ServersEdit = props => (
     <Edit title={<ServersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
-            <TextInput source="ip" />
-            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key">
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="ip" validate={[required()]}/>
+            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
         </SimpleForm>
@@ -53,9 +53,9 @@ export const ServersEdit = props => (
 export const ServersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
-            <TextInput source="ip" />
-            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key">
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="ip" validate={[required()]}/>
+            <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key"validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
         </SimpleForm>

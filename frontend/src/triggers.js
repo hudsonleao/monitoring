@@ -46,8 +46,8 @@ export const TriggersEdit = props => (
     <Edit title={<TriggersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
-            <TextInput source="command" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="command" validate={[required()]}/>
         </SimpleForm>
     </Edit>
 );
@@ -55,8 +55,8 @@ export const TriggersEdit = props => (
 export const TriggersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
-            <TextInput source="command" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="command" validate={[required()]}/>
         </SimpleForm>
     </Create>
 );

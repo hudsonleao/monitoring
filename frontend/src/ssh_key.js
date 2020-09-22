@@ -53,7 +53,7 @@ export const SshKeyEdit = props => (
             <TextInput disabled source="id" />
             <TextInput disabled source="ssh_key" />
             <BooleanInput label="Generate new ssh key" source="generate_new_ssh_key" />
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <DateTimeInput source="expiration_date" />
         </SimpleForm>
     </Edit>
@@ -62,7 +62,7 @@ export const SshKeyEdit = props => (
 export const SshKeyCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <DateTimeInput source="expiration_date" />
         </SimpleForm>
     </Create>

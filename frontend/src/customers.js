@@ -1,5 +1,5 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton } from 'react-admin';
+import { List, Edit, Filter, Create, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const CustomersTitle = ({ record }) => {
@@ -44,15 +44,15 @@ export const CustomersEdit = (props) => {
     return (<Edit title={<CustomersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <ReferenceInput label="Plans" source="plans_id" reference="plans">
+            <ReferenceInput label="Plans" source="plans_id" reference="plans" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
-            <TextInput source="name" />
-            <TextInput source="email" />
-            <TextInput source="address" />
-            <TextInput source="city" />
-            <TextInput source="phone_number" />
-            <TextInput source="document" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="email" validate={[required()]}/>
+            <TextInput source="address" validate={[required()]}/>
+            <TextInput source="city" validate={[required()]}/>
+            <TextInput source="phone_number" validate={[required()]}/>
+            <TextInput source="document" validate={[required()]}/>
         </SimpleForm>
     </Edit>
     )
@@ -61,15 +61,15 @@ export const CustomersEdit = (props) => {
 export const CustomersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <ReferenceInput label="Plans" source="plansId" reference="plans">
+            <ReferenceInput label="Plans" source="plansId" reference="plans" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
-            <TextInput source="name" />
-            <TextInput source="email" />
-            <TextInput source="address" />
-            <TextInput source="city" />
-            <TextInput source="phone_number" />
-            <TextInput source="document" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="email" validate={[required()]}/>
+            <TextInput source="address" validate={[required()]}/>
+            <TextInput source="city" validate={[required()]}/>
+            <TextInput source="phone_number" validate={[required()]}/>
+            <TextInput source="document" validate={[required()]}/>
         </SimpleForm>
     </Create>
 );

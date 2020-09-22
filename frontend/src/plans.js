@@ -43,11 +43,11 @@ export const PlansEdit = props => (
     <Edit title={<PlansTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <TextInput source="description" />
-            <TextInput source="users_limit" />
-            <TextInput source="applications_limit" />
-            <TextInput source="servers_limit" />
+            <TextInput source="users_limit" validate={[required()]}/>
+            <TextInput source="applications_limit" validate={[required()]}/>
+            <TextInput source="servers_limit" validate={[required()]}/>
 
         </SimpleForm>
     </Edit>
@@ -56,11 +56,11 @@ export const PlansEdit = props => (
 export const PlansCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
+            <TextInput source="name" validate={[required()]}/>
             <TextInput source="description" />
-            <TextInput source="users_limit" />
-            <TextInput source="applications_limit" />
-            <TextInput source="servers_limit" />
+            <TextInput source="users_limit" validate={[required()]}/>
+            <TextInput source="applications_limit" validate={[required()]}/>
+            <TextInput source="servers_limit" validate={[required()]}/>
         </SimpleForm>
     </Create>
 );

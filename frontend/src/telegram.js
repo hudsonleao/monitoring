@@ -47,9 +47,9 @@ export const TelegramEdit = props => (
     <Edit title={<TelegramTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
-            <TextInput source="telegram_channel_id" />
-            <TextInput source="message" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="telegram_channel_id" validate={[required()]}/>
+            <TextInput source="message" validate={[required()]}/>
         </SimpleForm>
     </Edit>
 );
@@ -57,9 +57,9 @@ export const TelegramEdit = props => (
 export const TelegramCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
-            <TextInput source="telegram_channel_id" />
-            <TextInput source="message" />
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="telegram_channel_id" validate={[required()]}/>
+            <TextInput source="message" validate={[required()]}/>
         </SimpleForm>
     </Create>
 );

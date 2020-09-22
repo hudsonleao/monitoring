@@ -40,9 +40,9 @@ export const UsersEdit = props => (
     <Edit title={<UsersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />
-            <TextInput source="name" />
-            <TextInput source="user" />
-            <ReferenceInput label="Level" source="level" reference="userslevel">
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="user" validate={[required()]}/>
+            <ReferenceInput label="Level" source="level" reference="userslevel" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
         </SimpleForm>
@@ -52,10 +52,10 @@ export const UsersEdit = props => (
 export const UsersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <TextInput source="name" />
-            <TextInput source="user" />
-            <PasswordInput source="password" />
-            <ReferenceInput label="Level" source="level" reference="userslevel">
+            <TextInput source="name" validate={[required()]}/>
+            <TextInput source="user" validate={[required()]}/>
+            <PasswordInput source="password" validate={[required()]}/>
+            <ReferenceInput label="Level" source="level" reference="userslevel" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
         </SimpleForm>
