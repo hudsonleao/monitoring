@@ -12,7 +12,10 @@ export default {
     login: async ({ username, password }) => {
 
         const { data } = await axios.get(`${apiUrl}/jwt`, {
-            headers: { 'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf' }
+            headers: {
+                'token': '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf',
+                'username': username
+            }
         });
         localStorage.setItem('token', data.token);
 
@@ -49,7 +52,7 @@ export default {
     },
     // called when the API returns an error
     checkError: ({ status }) => {
-        if(status === 406){
+        if (status === 406) {
             return Promise.resolve();
         }
         if (status === 401 || status === 403) {
