@@ -1,21 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <script type="text/javascript">
+
+    function tokenJWT(username) {
+      let url = "http://localhost:8065/jwt";
+
+      let xhttp = new XMLHttpRequest();
+      let token;
+
+      xhttp.open("GET", url, true);
+      xhttp.setRequestHeader('token', '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf');
+      xhttp.setRequestHeader('username', username);
+
+      xhttp.onreadystatechange = function () {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          token = xhttp.responseText
+          token = JSON.parse(token)
+          localStorage.setItem('token', token.token);
+        }
+      }
+      xhttp.send();
+      return true;
+    }
+
+    function getLevelSecret(username) {
+      let url = `http://localhost:8065/login/google`;
+
+      let token = localStorage.getItem('token')
+      token = token.trim()
+
+      let tokenGoogle = localStorage.getItem('token_google')
+
+      let xhttp = new XMLHttpRequest();
+
+      xhttp.open("GET", url, true);
+      xhttp.setRequestHeader('Content-Type', 'application/json');
+      xhttp.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhttp.setRequestHeader('username', username);
+      xhttp.setRequestHeader('token_google', tokenGoogle);
+
+      xhttp.onreadystatechange = function () {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          let response = xhttp.responseText
+          response = JSON.parse(response)
+          localStorage.setItem('secret', response.secret);
+          localStorage.setItem('permission', response.permission);
+          window.location.href = `${window.location.origin}/#/`
+        }
+      }
+      xhttp.send();
+      return true;
+    }
+
+    async function onSignIn(googleUser) {
+
+      let profile = googleUser.getBasicProfile();
+
+      let id_token = googleUser.getAuthResponse().id_token;
+
+      localStorage.setItem('image', profile.getImageUrl());
+      localStorage.setItem('token_google', id_token);
+      localStorage.setItem('id', profile.getId());
+      localStorage.setItem('username', profile.getEmail());
+
+      let username = profile.getEmail()
+
+      await tokenJWT(username);
+
+     await getLevelSecret(username)
+
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="Monitoring" content="Monitoring application" />
+  <meta name="google-signin-client_id"
+    content="206491084146-ruhnujukpbgpph2vm2afsfg046d8h10m.apps.googleusercontent.com">
+  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -24,12 +96,14 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Monitoring</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!--
+
+  <title>Monitoring</title>
+</head>
+
+<body>
+  <noscript></noscript>
+  <div id="root"></div>
+  <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -39,5 +113,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-  </body>
+</body>
+
 </html>

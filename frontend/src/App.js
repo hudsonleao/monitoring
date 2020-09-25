@@ -1,5 +1,9 @@
 import * as React from "react";
-import { Admin, Resource, Login } from 'react-admin';
+import { Admin, Resource } from 'react-admin';
+import LoginPage from "./LoginPage";
+import Dashboard from './Dashboard';
+import authProvider from './authProvider';
+import dataProvider from './dataProvider';
 import { ApplicationsList, ApplicationsEdit, ApplicationsCreate } from './applications';
 import { PlansList, PlansEdit, PlansCreate } from './plans';
 import { CustomersList, CustomersEdit, CustomersCreate } from './customers';
@@ -8,10 +12,6 @@ import { ServersList, ServersEdit, ServersCreate } from './servers';
 import { SshKeyList, SshKeyEdit, SshKeyCreate } from './ssh_key';
 import { TelegramList, TelegramEdit, TelegramCreate } from './telegram';
 import { TriggersList, TriggersEdit, TriggersCreate } from './triggers';
-import Dashboard from './Dashboard';
-import authProvider from './authProvider';
-import dataProvider from './dataProvider';
-
 
 import ApplicationsIcon from '@material-ui/icons/Apps';
 import PlansIcon from '@material-ui/icons/LocalOffer';
@@ -22,14 +22,8 @@ import SshKeyIcon from '@material-ui/icons/VpnKey';
 import TelegramIcon from '@material-ui/icons/Telegram';
 import TriggersIcon from '@material-ui/icons/SettingsEthernet';
 
-const MyLoginPage = () => (
-  <Login
-    backgroundImage="https://newevolutiondesigns.com/images/freebies/tech-wallpaper-2.jpg"
-  />
-);
-
 const App = () => (
-  <Admin loginPage={MyLoginPage} dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
+  <Admin loginPage={LoginPage} dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
     {permission => [
       <Resource name="applications" list={ApplicationsList} edit={ApplicationsEdit} create={ApplicationsCreate} icon={ApplicationsIcon} />,
       permission === 'super_admin'

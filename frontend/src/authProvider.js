@@ -17,7 +17,7 @@ export default {
                 'username': username
             }
         });
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.token.trim());
 
         let params = {
             user: username,
@@ -25,14 +25,13 @@ export default {
         }
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${data.token}`
+            'Authorization': `Bearer ${data.token.trim()}`
         }
 
         const consulta = await axios.post(`${apiUrl}/login`, params, {
             headers: headers
         });
         let secret = consulta.data.secret
-        console.log(consulta.data.permission)
         let permission = consulta.data.permission
 
         if (consulta.status === 200) {
@@ -43,11 +42,15 @@ export default {
         }
     },
     // called when the user clicks on the logout button
-    logout: () => {
+    logout: async () => {
         localStorage.removeItem('username');
         localStorage.removeItem('secret');
         localStorage.removeItem('token');
         localStorage.removeItem('permission');
+        localStorage.removeItem('image');
+        localStorage.removeItem('token_google');
+        localStorage.removeItem('id');
+
         return Promise.resolve();
     },
     // called when the API returns an error
