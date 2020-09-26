@@ -27,30 +27,31 @@ export default {
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 
         const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${data.token}`
-    }
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${data.token}`
+        }
 
         const consulta = await axios.post(`${apiUrl}/login`, params, {
-        headers: headers
-    });
-    let secret = consulta.data.secret
+            headers: headers
+        });
+        let secret = consulta.data.secret
         let permission = consulta.data.permission
 
-        if(consulta.status === 200) {
-    localStorage.setItem('username', username);
-    localStorage.setItem('secret', secret);
-    localStorage.setItem('permission', permission);
+        if (consulta.status === 200) {
+            localStorage.setItem('username', username);
+            localStorage.setItem('secret', secret);
+            localStorage.setItem('permission', permission);
 
-}
+        }
     },
-// called when the user clicks on the logout button
-logout: async () => {
-    localStorage.clear();
-    sessionStorage.clear();
+    // called when the user clicks on the logout button
+    logout: async () => {
+        localStorage.removeItem('username');
+        localStorage.removeItem('secret');
+        localStorage.removeItem('permission');
 
-    return Promise.resolve();
-},
+        return Promise.resolve();
+    },
     // called when the API returns an error
     checkError: ({ status }) => {
         if (status === 406) {
@@ -59,21 +60,20 @@ logout: async () => {
         if (status === 401 || status === 403) {
             localStorage.removeItem('username');
             localStorage.removeItem('secret');
-            localStorage.removeItem('token')
             localStorage.removeItem('permission');
             return Promise.reject();
         }
         return Promise.resolve();
     },
-        // called when the user navigates to a new location, to check for authentication
-        checkAuth: () => {
-            return localStorage.getItem('username') && localStorage.getItem('token') && localStorage.getItem('secret')
-                ? Promise.resolve()
-                : Promise.reject();
-        },
-            // called when the user navigates to a new location, to check for permissions / roles
-            getPermissions: () => {
-                const role = localStorage.getItem('permission');
-                return role ? Promise.resolve(role) : Promise.reject();
-            }
+    // called when the user navigates to a new location, to check for authentication
+    checkAuth: () => {
+        return localStorage.getItem('username') && localStorage.getItem('token') && localStorage.getItem('secret')
+            ? Promise.resolve()
+            : Promise.reject();
+    },
+    // called when the user navigates to a new location, to check for permissions / roles
+    getPermissions: () => {
+        const role = localStorage.getItem('permission');
+        return role ? Promise.resolve(role) : Promise.reject();
+    }
 };

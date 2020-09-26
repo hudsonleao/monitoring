@@ -47,6 +47,10 @@ body {
     font-size: 0.9rem;
 }
 
+#btn-signup{
+    color: white!important;
+}
+
 #logreg-forms a{
     display: block;
     padding-top:10px;
@@ -110,6 +114,5 @@ body {
     #logreg-forms  .google-btn:after{
         content:'Google+';
     }
-    
     
 }

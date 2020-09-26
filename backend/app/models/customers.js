@@ -26,19 +26,19 @@ module.exports = function (app) {
 		},
 		address: {
 			type: Sequelize.STRING(255),
-			allowNull: false
+			allowNull: true
         },
         city: {
 			type: Sequelize.STRING(500),
-			allowNull: false
+			allowNull: true
         },
         phone_number: {
 			type: Sequelize.STRING(255),
-			allowNull: false
+			allowNull: true
         },
         document: {
 			type: Sequelize.STRING(255),
-			allowNull: false
+			allowNull: true
 		},
 	}, {
 

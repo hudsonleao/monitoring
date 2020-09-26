@@ -30,20 +30,18 @@ module.exports = function (app) {
                     password: password
                 }
             });
-
-            let permission;
-            if(userExist.level == 3){
-                permission = "super_admin"
-            } else if(userExist.level == 2){
-                permission = "admin"
-            } else {
-                permission = "normal"
-            }
-
             if (userExist) {
-                return res.status(200).json({ message: 'exist', secret: secret , permission: permission});
+                let permission;
+                if (userExist.level == 3) {
+                    permission = "super_admin"
+                } else if (userExist.level == 2) {
+                    permission = "admin"
+                } else {
+                    permission = "normal"
+                }
+                return res.status(200).json({ message: 'exist', secret: secret, permission: permission });
             } else {
-                return res.status(500).json({ message: 'incorrect' });
+                return res.status(500).json({ message: 'Username or password incorrect!' });
             }
         } catch (error) {
             console.log(error);
