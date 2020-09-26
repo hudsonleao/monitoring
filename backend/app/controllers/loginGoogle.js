@@ -53,6 +53,5 @@ module.exports = function (app) {
             return res.status(500).json(error)
         }
     }
-
     return controller;
 };

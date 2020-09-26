@@ -17,42 +17,40 @@ export default {
                 'username': username
             }
         });
-        localStorage.setItem('token', data.token.trim());
+        localStorage.setItem('token', data.token);
 
         let params = {
             user: username,
             password: password,
         }
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+
         const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${data.token.trim()}`
-        }
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${data.token}`
+    }
 
         const consulta = await axios.post(`${apiUrl}/login`, params, {
-            headers: headers
-        });
-        let secret = consulta.data.secret
+        headers: headers
+    });
+    let secret = consulta.data.secret
         let permission = consulta.data.permission
 
-        if (consulta.status === 200) {
-            localStorage.setItem('username', username);
-            localStorage.setItem('secret', secret);
-            localStorage.setItem('permission', permission);
+        if(consulta.status === 200) {
+    localStorage.setItem('username', username);
+    localStorage.setItem('secret', secret);
+    localStorage.setItem('permission', permission);
 
-        }
+}
     },
-    // called when the user clicks on the logout button
-    logout: async () => {
-        localStorage.removeItem('username');
-        localStorage.removeItem('secret');
-        localStorage.removeItem('token');
-        localStorage.removeItem('permission');
-        localStorage.removeItem('image');
-        localStorage.removeItem('token_google');
-        localStorage.removeItem('id');
+// called when the user clicks on the logout button
+logout: async () => {
+    localStorage.clear();
+    sessionStorage.clear();
 
-        return Promise.resolve();
-    },
+    return Promise.resolve();
+},
     // called when the API returns an error
     checkError: ({ status }) => {
         if (status === 406) {
@@ -67,15 +65,15 @@ export default {
         }
         return Promise.resolve();
     },
-    // called when the user navigates to a new location, to check for authentication
-    checkAuth: () => {
-        return localStorage.getItem('username') && localStorage.getItem('token') && localStorage.getItem('secret')
-            ? Promise.resolve()
-            : Promise.reject();
-    },
-    // called when the user navigates to a new location, to check for permissions / roles
-    getPermissions: () => {
-        const role = localStorage.getItem('permission');
-        return role ? Promise.resolve(role) : Promise.reject();
-    }
+        // called when the user navigates to a new location, to check for authentication
+        checkAuth: () => {
+            return localStorage.getItem('username') && localStorage.getItem('token') && localStorage.getItem('secret')
+                ? Promise.resolve()
+                : Promise.reject();
+        },
+            // called when the user navigates to a new location, to check for permissions / roles
+            getPermissions: () => {
+                const role = localStorage.getItem('permission');
+                return role ? Promise.resolve(role) : Promise.reject();
+            }
 };

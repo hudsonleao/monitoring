@@ -5,7 +5,6 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import './LoginPage.css'
 import 'bootstrap/dist/css/bootstrap.css'
 import './fontawesome/css/all.min.css'
-
 class LoginPage extends Component {
 
     submit = (e) => {

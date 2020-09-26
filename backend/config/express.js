@@ -9,7 +9,7 @@ const cors = require('cors');
 
 module.exports = function () {
     let app = express();
-    const jwtSecret = '@2423rWFq21fdEr3awr';
+    const jwtSecret = '2423rWFq21fdEr3awr';
     app.debug = process.env.NODE_DEBUG || false;
     app.sequelize = sequelize.getConnection();
     app.use(bodyParser.json());
@@ -18,21 +18,18 @@ module.exports = function () {
     app.use(require('method-override')());
     app.use(cors());
     app.options("*", cors());
-    
+
     app.get('/jwt', (req, res) => {
-        if(req.headers.token === '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf'){
-        const token = jsonwebtoken.sign({ user: req.headers.username }, jwtSecret, {
-                expiresIn: '24h'
-        });
-        res.cookie('token', token, { httpOnly: true });
-        res.json({ token });
+        if (req.headers.token === '@f3fg4ieWEFwfI3R3@4REFFSFEG$%dfsdf') {
+            const token = jsonwebtoken.sign({ username: req.headers.username }, jwtSecret, { expiresIn: '24h' });
+            res.json({ token: token })
         } else {
             res.status(401).json("token invalid")
         }
     });
 
     app.use(jwt({ secret: jwtSecret, algorithms: ['HS256'] }));
-    
+
     consign({ cwd: 'app', verbose: false })
         .include("models")
         .then("controllers")

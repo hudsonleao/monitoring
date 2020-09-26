@@ -9,17 +9,6 @@ if (process.env.NODE_ENV === "development") {
 }
 const httpClient = fetchUtils.fetchJson;
 
-let user = localStorage.getItem('username');
-let secret = localStorage.getItem('secret');
-let token = localStorage.getItem('token');
-
-let header = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-    'user': user,
-    'secret': secret
-}
-
 export default {
     getList: (resource, params) => {
         const { page, perPage } = params.pagination;
@@ -29,6 +18,17 @@ export default {
             range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
             filter: JSON.stringify(params.filter),
         };
+
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
 
         return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
             method: 'GET',
@@ -43,6 +43,16 @@ export default {
     },
 
     getOne: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         return httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'GET',
             headers: new Headers(header),
@@ -55,6 +65,16 @@ export default {
     },
 
     getMany: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
@@ -70,6 +90,16 @@ export default {
     },
 
     getManyReference: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
@@ -93,7 +123,17 @@ export default {
         }));
     },
 
-    update: async (resource, params) =>
+    update: async (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
@@ -101,9 +141,19 @@ export default {
         }).catch((error) => {
             let erro = error.message
             throw erro;
-        }).then(({ json }) => ({ data: json })),
-
+        }).then(({ json }) => ({ data: json }))
+    },
     updateMany: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
@@ -117,6 +167,16 @@ export default {
     },
 
     create: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         return httpClient(`${apiUrl}/${resource}`, {
             method: 'POST',
             body: JSON.stringify(params.data),
@@ -129,17 +189,36 @@ export default {
         }))
     },
 
-    delete: (resource, params) =>
+    delete: (resource, params) =>{
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
+
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
             headers: new Headers(header),
         }).catch((error) => {
             let erro = error.message
             throw erro;
-        }).then(({ json }) => ({ data: json })),
-
+        }).then(({ json }) => ({ data: json }))
+    },
     deleteMany: (resource, params) => {
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+        let token = localStorage.getItem('token');
 
+        let header = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'user': user,
+            'secret': secret
+        }
         return httpClient(`${apiUrl}/${resource}`, {
             method: 'DELETE',
             body: JSON.stringify({ id: params.ids }),
