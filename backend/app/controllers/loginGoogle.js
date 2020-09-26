@@ -14,6 +14,7 @@ module.exports = function (app) {
     controller.loginGoogle = async (req, res) => {
         try {
             let { token_google, username } = req.headers;
+            console.log(token_google)
             let url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="
 
             let response = await fetch(`${url}${token_google}`);
