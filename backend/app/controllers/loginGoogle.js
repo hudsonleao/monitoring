@@ -8,12 +8,12 @@ module.exports = function (app) {
      * loginGoogle
      * @param {Object} req
      * @param {Object} res
-     * @method GET
+     * @method POST
      * @route /login/google
      */
     controller.loginGoogle = async (req, res) => {
         try {
-            let { token_google, username } = req.headers;
+            let { token_google, username } = req.body;
             console.log(token_google)
             let url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="
 
