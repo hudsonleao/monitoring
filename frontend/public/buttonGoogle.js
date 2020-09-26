@@ -40,11 +40,13 @@ function getLevelSecret(username) {
     let xhttp = new XMLHttpRequest();
 
     if (token) {
-        xhttp.open("GET", url, true);
+        xhttp.open("POST", url, true);
         xhttp.setRequestHeader('Content-Type', 'application/json');
         xhttp.setRequestHeader('Authorization', `Bearer ${token}`);
-        xhttp.setRequestHeader('username', username);
-        xhttp.setRequestHeader('token_google', tokenGoogle);
+        let body = {
+            "username": username,
+            "token_google": tokenGoogle
+        }
 
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -55,7 +57,7 @@ function getLevelSecret(username) {
                 window.location.href = `${window.location.origin}/#/`
             }
         }
-        xhttp.send();
+        xhttp.send(JSON.stringify(body));
         return true;
     } else {
         console.log("sem token")

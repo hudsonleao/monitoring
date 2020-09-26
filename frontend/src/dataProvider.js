@@ -144,16 +144,6 @@ export default {
         }).then(({ json }) => ({ data: json }))
     },
     updateMany: (resource, params) => {
-        let user = localStorage.getItem('username');
-        let secret = localStorage.getItem('secret');
-        let token = localStorage.getItem('token');
-
-        let header = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'user': user,
-            'secret': secret
-        }
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
