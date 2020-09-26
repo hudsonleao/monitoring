@@ -25,7 +25,7 @@ class LoginPage extends Component {
                 <div id="logreg-forms">
                     <form onSubmit={this.submit}>
                         <h1 class="h3 mb-3 font-weight-normal text-center"> Sign in</h1>
-                        <div class="g-signin2" data-width="380" data-height="35" data-longtitle="true" data-onsuccess="onSignIn"/>
+                        {window.innerWidth > 500 ? <div id="buttonGoogle" class="g-signin2" data-width="380" data-height="35" data-longtitle="true" data-onsuccess="onSignIn" /> : <div id="buttonGoogle" class="g-signin2" data-width="270" data-longtitle="true" data-onsuccess="onSignIn"/>}
                         <p class="text-center"> OR  </p>
                         <input type="email" id="username" name="username" class="form-control" placeholder="Email address" required="" autofocus="" />
                         <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="" />

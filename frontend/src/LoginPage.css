@@ -58,12 +58,16 @@ body {
     border:1px solid red;
 }
 
+#google {
+    align-items: center;
+}
+
 
 #logreg-forms button[type="submit"]{ margin-top:10px; }
 
 #logreg-forms .facebook-btn{  background-color:#3C589C; }
 
-#logreg-forms .google-btn{ background-color: #DF4B3B; color: #ffffff; }
+#logreg-forms .google-btn{ background-color: #DF4B3B }
 
 #logreg-forms .form-reset, #logreg-forms .form-signup{ display: none; }
 
@@ -106,4 +110,6 @@ body {
     #logreg-forms  .google-btn:after{
         content:'Google+';
     }
+    
+    
 }
