@@ -49,10 +49,10 @@ export const CustomersEdit = (props) => {
             </ReferenceInput>
             <TextInput source="name" validate={[required()]}/>
             <TextInput source="email" validate={[required()]}/>
-            <TextInput source="address" validate={[required()]}/>
-            <TextInput source="city" validate={[required()]}/>
-            <TextInput source="phone_number" validate={[required()]}/>
-            <TextInput source="document" validate={[required()]}/>
+            <TextInput source="address"/>
+            <TextInput source="city"/>
+            <TextInput source="phone_number"/>
+            <TextInput source="document"/>
         </SimpleForm>
     </Edit>
     )
@@ -61,15 +61,15 @@ export const CustomersEdit = (props) => {
 export const CustomersCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <ReferenceInput label="Plans" source="plansId" reference="plans" validate={[required()]}>
+            <ReferenceInput label="Plans" source="plans_id" reference="plans" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="name" validate={[required()]}/>
             <TextInput source="email" validate={[required()]}/>
-            <TextInput source="address" validate={[required()]}/>
-            <TextInput source="city" validate={[required()]}/>
-            <TextInput source="phone_number" validate={[required()]}/>
-            <TextInput source="document" validate={[required()]}/>
+            <TextInput source="address"/>
+            <TextInput source="city"/>
+            <TextInput source="phone_number"/>
+            <TextInput source="document"/>
         </SimpleForm>
     </Create>
 );

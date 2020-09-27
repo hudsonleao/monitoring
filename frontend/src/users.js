@@ -36,7 +36,7 @@ export const UsersList = (props) => {
     )
 }
 
-export const UsersEdit = props => (
+export const UsersEdit = (props) => (
     <Edit title={<UsersTitle />} {...props}>
         <SimpleForm>
             <TextInput disabled source="id" />

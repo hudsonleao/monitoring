@@ -1,4 +1,5 @@
 const auth = require("./auth");
+const { Op } = require("sequelize");
 module.exports = function (app) {
     let controller = {};
     const UsersLevel = app.models.usersLevel;
@@ -15,23 +16,25 @@ module.exports = function (app) {
         try {
             const userValid = await Auth.validaUser(req);
             if (userValid) {
-                if (userValid.level !== 3) {
+                if (userValid.level === 1) {
                     return res.status(401).json({
                         "message": "User cannot access this record"
                     });
                 }
-                let users;
+                let users = []
                 if (userValid.level == 3) {
                     users = await UsersLevel.findAll();
                 } else if (userValid.level == 2) {
                     users = await UsersLevel.findAll({
-                        where: {
-                            id: userValid.id
+                        where:{
+                            id: {
+                                [Op.ne]: 3
+                              }
                         }
                     });
-                } else {
-                    users = [];
-                }
+                   
+                    
+                } 
                 return res.status(200).json(users)
             } else {
                 return res.status(500).json({ message: 'error: user invalid' })

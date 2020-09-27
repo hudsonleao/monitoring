@@ -4,7 +4,7 @@ function tokenJWT(username) {
     if (window.location.host.indexOf("localhost") !== -1) {
         url = "http://localhost:8065/jwt"
     } else {
-        url = "https://service.monitoramos.com.br/jwt"
+        url = "https://api.monitoramos.com.br/jwt"
     }
 
     let xhttp = new XMLHttpRequest();
@@ -31,7 +31,7 @@ function getLevelSecret(username) {
     if (window.location.host.indexOf("localhost") !== -1) {
         url = "http://localhost:8065/login/google"
     } else {
-        url = "https://service.monitoramos.com.br/login/google"
+        url = "https://api.monitoramos.com.br/login/google"
     }
 
     let token = localStorage.getItem('token')

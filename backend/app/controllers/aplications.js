@@ -24,27 +24,29 @@ module.exports = function (app) {
                 let trigger
                 if (userValid.level === 3) {
                     applications = await Applications.findAll();
-                    for (let i = 0; i < applications.length; i++) {
-                        if (applications[i].users_telegram_id) {
-                            telegram = await Telegram.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: applications[i].users_telegram_id
+                    if (applications.length > 0) {
+                        for (let i = 0; i < applications.length; i++) {
+                            if (applications[i].users_telegram_id) {
+                                telegram = await Telegram.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].users_telegram_id
+                                    }
+                                });
+                                if (telegram) {
+                                    applications[i].users_telegram_id = telegram.name;
                                 }
-                            });
-                            if (telegram) {
-                                applications[i].users_telegram_id = telegram.name;
                             }
-                        }
-                        if (applications[i].users_telegram_id) {
-                            trigger = await Triggers.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: applications[i].triggers_id
+                            if (applications[i].users_telegram_id) {
+                                trigger = await Triggers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].triggers_id
+                                    }
+                                });
+                                if (trigger) {
+                                    applications[i].triggers_id = trigger.name
                                 }
-                            });
-                            if (trigger) {
-                                applications[i].triggers_id = trigger.name
                             }
                         }
                     }
@@ -63,66 +65,74 @@ module.exports = function (app) {
                                 users_id: users[i].id
                             }
                         });
-                        for (let j = 0; j < applicationsPerUser.length; j++) {
-                            allApplications.push(applicationsPerUser[j]);
-                        }
-                    }
-                    for (let i = 0; i < allApplications.length; i++) {
-                        if (applications[i].users_telegram_id) {
-                            telegram = await Telegram.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: allApplications[i].users_telegram_id
-                                }
-                            });
-                            if (telegram) {
-                                allApplications[i].users_telegram_id = telegram.name;
-                            }
-                        }
-                        if (applications[i].triggers_id) {
-                            trigger = await Triggers.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: allApplications[i].triggers_id
-                                }
-                            });
-                            if (trigger) {
-                                allApplications[i].triggers_id = trigger.name
+                        if (applicationsPerUser.length > 0) {
+                            for (let j = 0; j < applicationsPerUser.length; j++) {
+                                allApplications.push(applicationsPerUser[j]);
                             }
                         }
                     }
-                    applications = allApplications
+                    if (allApplications.length > 0) {
+                        for (let i = 0; i < allApplications.length; i++) {
+                            if (allApplications[i].users_telegram_id) {
+                                telegram = await Telegram.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: allApplications[i].users_telegram_id
+                                    }
+                                });
+                                if (telegram) {
+                                    allApplications[i].users_telegram_id = telegram.name;
+                                }
+                            }
+                            if (allApplications[i].triggers_id) {
+                                trigger = await Triggers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: allApplications[i].triggers_id
+                                    }
+                                });
+                                if (trigger) {
+                                    allApplications[i].triggers_id = trigger.name
+                                }
+                            }
+                        }
+                        applications = allApplications
+                    }
                 } else {
                     applications = await Applications.findAll({
                         where: {
                             users_id: userValid.id
                         }
                     });
-
-                    for (let i = 0; i < applications.length; i++) {
-                        if (applications[i].users_telegram_id) {
-                            telegram = await Telegram.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: applications[i].users_telegram_id
+                    if (applications.length > 0) {
+                        for (let i = 0; i < applications.length; i++) {
+                            if (applications[i].users_telegram_id) {
+                                telegram = await Telegram.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].users_telegram_id
+                                    }
+                                });
+                                if (telegram) {
+                                    applications[i].users_telegram_id = telegram.name;
                                 }
-                            });
-                            if (telegram) {
-                                applications[i].users_telegram_id = telegram.name;
                             }
-                        }
-                        if (applications[i].users_telegram_id) {
-                            trigger = await Triggers.findOne({
-                                attributes: ['name'],
-                                where: {
-                                    id: applications[i].triggers_id
+                            if (applications[i].users_telegram_id) {
+                                trigger = await Triggers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].triggers_id
+                                    }
+                                });
+                                if (trigger) {
+                                    applications[i].triggers_id = trigger.name;
                                 }
-                            });
-                            if (trigger) {
-                                applications[i].triggers_id = trigger.name;
                             }
                         }
                     }
+                }
+                if(!applications || applications === "" || applications === undefined){
+                    applications = []
                 }
                 return res.status(200).json(applications)
             } else {
@@ -158,15 +168,17 @@ module.exports = function (app) {
                             id: req.params.id
                         }
                     });
-                    let userApplication = await Users.findOne({
-                        where: {
-                            id: applications.users_id
+                    if (applications) {
+                        let userApplication = await Users.findOne({
+                            where: {
+                                id: applications.users_id
+                            }
+                        });
+                        if (userApplication.customers_id !== userValid.customers_id) {
+                            return res.status(401).json({
+                                message: "User cannot access this record "
+                            })
                         }
-                    });
-                    if (userApplication.customers_id !== userValid.customers_id) {
-                        return res.status(401).json({
-                            message: "User cannot access this record "
-                        })
                     }
                 } else {
                     applications = await Applications.findOne({

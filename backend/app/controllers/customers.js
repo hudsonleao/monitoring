@@ -75,13 +75,13 @@ module.exports = function (app) {
     }
 
     /**
-         * addCustomers
+         * createCustomers
          * @param {Object} req
          * @param {Object} res
          * @method POST
          * @route /customers
          */
-    controller.addCustomers = async (req, res) => {
+    controller.createCustomers = async (req, res) => {
         try {
             const userValid = await Auth.validaUser(req);
             let msg = "";

@@ -4,7 +4,7 @@ let apiUrl;
 if (process.env.NODE_ENV === "development") {
     apiUrl = "http://localhost:8065"
 } else {
-    apiUrl = "https://service.monitoramos.com.br"
+    apiUrl = "https://api.monitoramos.com.br"
 }
 
 export default {

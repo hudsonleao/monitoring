@@ -62,10 +62,14 @@ module.exports = function (app) {
                             id: req.params.id
                         }
                     });
-                    if (user.customers_id !== userValid.customers_id) {
-                        return res.status(401).json({
-                            message: "User cannot access this record "
-                        });
+                    if (user) {
+                        if (user.customers_id) {
+                            if (user.customers_id !== userValid.customers_id) {
+                                return res.status(401).json({
+                                    message: "User cannot access this record "
+                                });
+                            }
+                        }
                     }
                 } else {
                     user = [];

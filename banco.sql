@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 09-Set-2020 às 05:09
+-- Tempo de geração: 27-Set-2020 às 16:58
 -- Versão do servidor: 10.4.13-MariaDB
 -- versão do PHP: 7.2.31
 
@@ -30,24 +30,17 @@ SET time_zone = "+00:00";
 CREATE TABLE `applications` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
-  `description` varchar(255) NOT NULL,
-  `protocol` varchar(5) NOT NULL,
-  `url` varchar(255) DEFAULT NULL,
-  `ip` varchar(14) DEFAULT NULL,
-  `port` varchar(6) DEFAULT NULL,
-  `last_status` varchar(255) DEFAULT 'success',
+  `name` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `users_telegram_id` int(11) DEFAULT NULL,
+  `triggers_id` int(11) DEFAULT NULL,
+  `protocol` varchar(5) CHARACTER SET latin1 NOT NULL,
+  `url_or_ip` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `port` varchar(6) CHARACTER SET latin1 DEFAULT NULL,
+  `last_status` varchar(255) CHARACTER SET latin1 DEFAULT 'success',
   `last_check` datetime DEFAULT NULL,
   `attempts_error` int(1) DEFAULT 0,
   `attempts_success` int(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Extraindo dados da tabela `applications`
---
-
-INSERT INTO `applications` (`id`, `users_id`, `description`, `protocol`, `url`, `ip`, `port`, `last_status`, `last_check`, `attempts_error`, `attempts_success`) VALUES
-(1, 4, 'Monitoramento site do google', 'https', 'google.com.br', NULL, NULL, 'success', '2020-07-14 00:45:46', 0, 0),
-(4, 6, 'Monitoring uol', 'https', 'uol.com.br', NULL, NULL, 'success', '2020-07-14 00:45:46', 0, 0);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -60,10 +53,10 @@ CREATE TABLE `customers` (
   `plans_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `city` varchar(255) NOT NULL,
-  `phone_number` varchar(255) NOT NULL,
-  `document` varchar(255) NOT NULL
+  `address` varchar(255) DEFAULT NULL,
+  `city` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(255) DEFAULT NULL,
+  `document` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -71,8 +64,20 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `plans_id`, `name`, `email`, `address`, `city`, `phone_number`, `document`) VALUES
-(1, 2, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', 'Rua A, 562 - São Tomé', '37999855488', '37999855488', '13015116681'),
-(2, 1, 'Test customer 2', 'test@gmail.com', 'Rua B', 'Bom Despacho', '3799999999', '111111111111');
+(1, 2, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', 'Rua A, 562 - São Tomé', '37999999999', '37999999999', '111111111111111');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `forgot_password`
+--
+
+CREATE TABLE `forgot_password` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `hash` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -95,7 +100,7 @@ CREATE TABLE `plans` (
 
 INSERT INTO `plans` (`id`, `name`, `description`, `users_limit`, `applications_limit`, `servers_limit`) VALUES
 (1, 'Free', 'Free plan, 2 users, 10 applications and 2 servers.', 2, 10, 2),
-(2, 'Pro', 'Pro plan, 10 users, 50 applications and 10 servers.', 10, 50, 10);
+(2, 'Pro', 'Professional plan, 10 users, 50 applications and 10 servers.', 10, 50, 10);
 
 -- --------------------------------------------------------
 
@@ -106,17 +111,23 @@ INSERT INTO `plans` (`id`, `name`, `description`, `users_limit`, `applications_l
 CREATE TABLE `servers` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
   `ip` varchar(255) NOT NULL,
-  `key_ssh` varchar(500) NOT NULL
+  `ssh_key_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
 --
--- Extraindo dados da tabela `servers`
+-- Estrutura da tabela `triggers`
 --
 
-INSERT INTO `servers` (`id`, `users_id`, `description`, `ip`, `key_ssh`) VALUES
-(1, 6, 'Server google', '8.8.8.8', '');
+CREATE TABLE `triggers` (
+  `id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `command` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -127,19 +138,68 @@ INSERT INTO `servers` (`id`, `users_id`, `description`, `ip`, `key_ssh`) VALUES
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `customers_id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `user` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `level` int(1) NOT NULL DEFAULT 1 COMMENT '1 - Normal\r\n2- Admin\r\n3-Super Admin'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `name` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `user` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `password` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `level` int(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Extraindo dados da tabela `users`
 --
 
 INSERT INTO `users` (`id`, `customers_id`, `name`, `user`, `password`, `level`) VALUES
-(4, 1, 'Administrador', 'admin@monitoramos.com.br', 'f73119e41141c8af5b0c047c11e6df28', 3),
-(6, 1, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', '329dd6b5891e07fd5a2ca76f797ec758', 3);
+(1, 1, 'Administrator', 'admin@monitoramos.com.br', 'f73119e41141c8af5b0c047c11e6df28', 3),
+(2, 1, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', '329dd6b5891e07fd5a2ca76f797ec758', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `users_level`
+--
+
+CREATE TABLE `users_level` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `users_level`
+--
+
+INSERT INTO `users_level` (`id`, `name`) VALUES
+(1, 'Normal'),
+(2, 'Admin'),
+(3, 'Super Admin');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `users_ssh_key`
+--
+
+CREATE TABLE `users_ssh_key` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `ssh_key` varchar(500) NOT NULL,
+  `key_name` varchar(255) NOT NULL,
+  `expiration_date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `users_telegram`
+--
+
+CREATE TABLE `users_telegram` (
+  `id` int(11) NOT NULL,
+  `users_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `telegram_channel_id` varchar(255) NOT NULL,
+  `message` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Índices para tabelas despejadas
@@ -150,7 +210,8 @@ INSERT INTO `users` (`id`, `customers_id`, `name`, `user`, `password`, `level`) 
 --
 ALTER TABLE `applications`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `usuarios_id` (`users_id`);
+  ADD KEY `usuarios_id` (`users_id`),
+  ADD KEY `users_telegram_id` (`users_telegram_id`);
 
 --
 -- Índices para tabela `customers`
@@ -158,6 +219,12 @@ ALTER TABLE `applications`
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`),
   ADD KEY `customer_plan` (`plans_id`);
+
+--
+-- Índices para tabela `forgot_password`
+--
+ALTER TABLE `forgot_password`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices para tabela `plans`
@@ -170,14 +237,42 @@ ALTER TABLE `plans`
 --
 ALTER TABLE `servers`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `users_id` (`users_id`);
+  ADD KEY `users_id` (`users_id`),
+  ADD KEY `ssh_key_id` (`ssh_key_id`);
+
+--
+-- Índices para tabela `triggers`
+--
+ALTER TABLE `triggers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `users_id2` (`users_id`);
 
 --
 -- Índices para tabela `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_customer` (`customers_id`);
+  ADD KEY `user_customer` (`customers_id`),
+  ADD KEY `user_level` (`level`);
+
+--
+-- Índices para tabela `users_level`
+--
+ALTER TABLE `users_level`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices para tabela `users_ssh_key`
+--
+ALTER TABLE `users_ssh_key`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Índices para tabela `users_telegram`
+--
+ALTER TABLE `users_telegram`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`users_id`);
 
 --
 -- AUTO_INCREMENT de tabelas despejadas
@@ -187,13 +282,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de tabela `applications`
 --
 ALTER TABLE `applications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `plans`
@@ -202,16 +297,16 @@ ALTER TABLE `plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de tabela `servers`
---
-ALTER TABLE `servers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `users_level`
+--
+ALTER TABLE `users_level`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restrições para despejos de tabelas
@@ -221,6 +316,7 @@ ALTER TABLE `users`
 -- Limitadores para a tabela `applications`
 --
 ALTER TABLE `applications`
+  ADD CONSTRAINT `users_telegram_id` FOREIGN KEY (`users_telegram_id`) REFERENCES `users_telegram` (`id`),
   ADD CONSTRAINT `usuarios_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -233,13 +329,27 @@ ALTER TABLE `customers`
 -- Limitadores para a tabela `servers`
 --
 ALTER TABLE `servers`
-  ADD CONSTRAINT `users_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `ssh_key_id` FOREIGN KEY (`ssh_key_id`) REFERENCES `users_ssh_key` (`id`),
+  ADD CONSTRAINT `users_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+
+--
+-- Limitadores para a tabela `triggers`
+--
+ALTER TABLE `triggers`
+  ADD CONSTRAINT `users_id2` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `users`
 --
 ALTER TABLE `users`
-  ADD CONSTRAINT `user_customer` FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `user_customer` FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_level` FOREIGN KEY (`level`) REFERENCES `users_level` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `users_telegram`
+--
+ALTER TABLE `users_telegram`
+  ADD CONSTRAINT `user_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
