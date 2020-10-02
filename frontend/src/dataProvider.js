@@ -134,7 +134,7 @@ export default {
             'user': user,
             'secret': secret
         }
-        httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        return httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'PUT',
             body: JSON.stringify(params.data),
             headers: new Headers(header),
@@ -188,7 +188,7 @@ export default {
             'user': user,
             'secret': secret
         }
-        httpClient(`${apiUrl}/${resource}/${params.id}`, {
+        return httpClient(`${apiUrl}/${resource}/${params.id}`, {
             method: 'DELETE',
             headers: new Headers(header),
         }).catch((error) => {

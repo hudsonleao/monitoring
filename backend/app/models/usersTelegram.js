@@ -20,12 +20,20 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
+		bot_id: {
+			type: Sequelize.STRING(255),
+			allowNull: true
+		},
 		telegram_channel_id: {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
-		message: {
-			type: Sequelize.STRING,
+		message_success: {
+			type: Sequelize.STRING(255),
+			allowNull: false
+		},
+		message_error: {
+			type: Sequelize.STRING(255),
 			allowNull: false
         },
 	}, {

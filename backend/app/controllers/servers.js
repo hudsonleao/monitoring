@@ -157,7 +157,9 @@ module.exports = function (app) {
                 let serverExist = await Servers.findOne({
                     where: {
                         users_id: userValid.id,
-                        ip: data.ip
+                        server_ip: data.server_ip,
+                        server_user: data.server_user ? data.server_user : 'root',
+                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
                     }
                 });
                 if (serverExist) {
@@ -168,7 +170,9 @@ module.exports = function (app) {
                     let save = await Servers.create({
                         users_id: userValid.id,
                         name: data.name,
-                        ip: data.ip,
+                        server_ip: data.server_ip,
+                        server_user: data.server_user ? data.server_user : 'root',
+                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
                         ssh_key_id: data.ssh_key_id
                     });
                     if (save) {
@@ -177,7 +181,9 @@ module.exports = function (app) {
                             id: save.id,
                             users_id: userValid.id,
                             name: data.name,
-                            ip: data.ip,
+                            server_ip: data.server_ip,
+                            server_user: data.server_user ? data.server_user : 'root',
+                            server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
                             ssh_key_id: data.ssh_key_id
                         });
                         return res.status(200).json(values)
@@ -229,8 +235,10 @@ module.exports = function (app) {
                 let data = req.body;
                 let save = await Servers.update({
                     name: data.name,
-                    ip: data.ip,
-                    ssh_key_id: data.ssh_key_id
+                    server_ip: data.server_ip,
+                    server_user: data.server_user ? data.server_user : 'root',
+                    ssh_key_id: data.ssh_key_id,
+                    server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22
                 }, {
                     where: {
                         id: data.id
@@ -241,7 +249,9 @@ module.exports = function (app) {
                     values.push({
                         id: data.id,
                         name: data.name,
-                        ip: data.ip,
+                        server_ip: data.serverip,
+                        server_user: data.server_user ? data.server_user : 'root',
+                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
                         ssh_key_id: data.ssh_key_id
                     });
                     return res.status(200).json(values);

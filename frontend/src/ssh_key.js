@@ -30,6 +30,7 @@ export const SshKeyList = (props) => {
                     <TextField source="name" />
                     <FunctionField label="SSH key" render={
                         record => {
+                            if (record.ssh_key) {
                             let sshKey = record.ssh_key.slice(0, 15) + "..."
                             return (
                                 <span>{sshKey}<button class="buttonCopy"
@@ -38,7 +39,7 @@ export const SshKeyList = (props) => {
                     </button></span>
 
                             )
-                        }} />
+                        }}} />
                     <DateField source="expiration_date" showTime />
                     <EditButton />
                 </Datagrid>

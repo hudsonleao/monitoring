@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cors = require('cors');
-
+const cron = require('./cron');
 
 module.exports = function () {
     let app = express();
@@ -35,5 +35,9 @@ module.exports = function () {
         .then("controllers")
         .then("routes")
         .into(app);
+
+    const Cron = new cron(app);
+    Cron.start();
+    
     return app;
 };

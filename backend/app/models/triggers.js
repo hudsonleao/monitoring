@@ -23,7 +23,7 @@ module.exports = function (app) {
         command: {
             type: Sequelize.STRING,
 			allowNull: false
-        }
+		}
 	}, {
 		createdAt: false,
 		updatedAt: false,

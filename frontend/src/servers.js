@@ -28,7 +28,9 @@ export const ServersList = (props) => {
         <Datagrid>
             <TextField source="id" />
             <TextField source="name" />
-            <TextField source="ip" />
+            <TextField source="server_user" />
+            <TextField source="server_ip" />
+            <TextField source="server_ssh_port" />
             <TextField source="ssh_key_id" />
             <EditButton />
         </Datagrid>
@@ -42,7 +44,9 @@ export const ServersEdit = props => (
         <SimpleForm>
             <TextInput disabled source="id" />
             <TextInput source="name" validate={[required()]}/>
-            <TextInput source="ip" validate={[required()]}/>
+            <TextInput source="server_user"/>
+            <TextInput source="server_ip" validate={[required()]}/>
+            <TextInput source="server_ssh_port"/>
             <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key" validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>
@@ -54,7 +58,9 @@ export const ServersCreate = props => (
     <Create {...props}>
         <SimpleForm>
             <TextInput source="name" validate={[required()]}/>
-            <TextInput source="ip" validate={[required()]}/>
+            <TextInput source="server_user"/>
+            <TextInput source="server_ip" validate={[required()]}/>
+            <TextInput source="server_ssh_port"/>
             <ReferenceInput label="SSH Key" source="ssh_key_id" reference="ssh_key"validate={[required()]}>
                 <SelectInput optionText="name" />
             </ReferenceInput>

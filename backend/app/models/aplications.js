@@ -36,6 +36,14 @@ module.exports = function (app) {
                 model: 'triggers',
                 key: 'id'
             }
+		},
+		servers_id: {
+            type: Sequelize.INTEGER,
+            allowNull: true,
+            references: {
+                model: 'servers',
+                key: 'id'
+            }
         },
 		protocol: {
 			type: Sequelize.STRING(5),
@@ -43,11 +51,23 @@ module.exports = function (app) {
 		},
 		url_or_ip: {
 			type: Sequelize.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
 		port: {
 			type: Sequelize.STRING(6),
 			allowNull: true
+		},
+		correct_request_status: {
+			type: Sequelize.INTEGER,
+			allowNull: true
+		},
+		check_interval: {
+			type: Sequelize.INTEGER,
+			allowNull: false
+		},
+		queue_status: {
+			type: Sequelize.STRING(1),
+			allowNull: false
 		},
 		last_status: {
 			type: Sequelize.STRING(255),
@@ -57,12 +77,28 @@ module.exports = function (app) {
 			type: Sequelize.DATE,
 			allowNull: true
 		},
+		next_check: {
+			type: Sequelize.DATE,
+			allowNull: true
+		},
+		attempts_limit: {
+			type: Sequelize.INTEGER,
+			allowNull: true
+		},
 		attempts_error: {
 			type: Sequelize.INTEGER,
 			allowNull: true
 		},
 		attempts_success: {
 			type: Sequelize.INTEGER,
+			allowNull: true
+		},
+		created_date: {
+			type: Sequelize.DATE,
+			allowNull: true
+		},
+		update_date: {
+			type: Sequelize.DATE,
 			allowNull: true
 		}
 	}, {

@@ -20,8 +20,17 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
-		ip: {
+		server_user: {
 			type: Sequelize.STRING(255),
+			allowNull: false
+		},
+		server_ip: {
+			type: Sequelize.STRING(255),
+			allowNull: false
+		},
+		server_ssh_port: {
+			type: Sequelize.STRING(6),
+			defaultValue: 22,
 			allowNull: false
         },
         ssh_key_id: {

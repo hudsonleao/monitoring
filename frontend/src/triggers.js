@@ -28,7 +28,7 @@ export const TriggersList = (props) => {
         <Datagrid>
             <TextField source="id" />
             <TextField source="name" />
-            <FunctionField label="SSH key" render={
+            <FunctionField label="Command" render={
                         record => {
                             let Command = record.command.slice(0, 30) + "..."
                             return (

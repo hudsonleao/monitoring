@@ -132,7 +132,8 @@ module.exports = function (app) {
                     where: {
                         users_id: userValid.id,
                         telegram_channel_id: data.telegram_channel_id,
-                        message: data.message
+                        message_success: data.message_success,
+                        message_error: data.message_error
                     }
                 });
                 if (channelExist) {
@@ -144,7 +145,8 @@ module.exports = function (app) {
                         users_id: userValid.id,
                         name: data.name,
                         telegram_channel_id: data.telegram_channel_id,
-                        message: data.message
+                        message_success: data.message_success,
+                        message_error: data.message_error
                     });
                     if (save) {
                         let values = []
@@ -153,7 +155,8 @@ module.exports = function (app) {
                             users_id: userValid.id,
                             name: data.name,
                             telegram_channel_id: data.telegram_channel_id,
-                            message: data.message
+                            message_success: data.message_success,
+                            message_error: data.message_error
                         });
                         return res.status(200).json(values)
                     }
@@ -205,7 +208,8 @@ module.exports = function (app) {
                 let save = await UsersTelegram.update({
                     name: data.name,
                     telegram_channel_id: data.telegram_channel_id,
-                    message: data.message
+                    message_success: data.message_success,
+                    message_error: data.message_error
                 }, {
                     where: {
                         id: data.id
@@ -217,7 +221,8 @@ module.exports = function (app) {
                         id: data.id,
                         name: data.name,
                         telegram_channel_id: data.telegram_channel_id,
-                        message: data.message
+                        message_success: data.message_success,
+                        message_error: data.message_error
                     });
                     return res.status(200).json(values);
                 }

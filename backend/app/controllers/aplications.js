@@ -6,6 +6,7 @@ module.exports = function (app) {
     const Users = app.models.users;
     const Telegram = app.models.usersTelegram;
     const Triggers = app.models.triggers;
+    const Servers = app.models.servers;
     const Auth = new auth(app);
 
     /**
@@ -21,7 +22,8 @@ module.exports = function (app) {
             if (userValid) {
                 let applications;
                 let telegram;
-                let trigger
+                let trigger;
+                let servers;
                 if (userValid.level === 3) {
                     applications = await Applications.findAll();
                     if (applications.length > 0) {
@@ -37,7 +39,7 @@ module.exports = function (app) {
                                     applications[i].users_telegram_id = telegram.name;
                                 }
                             }
-                            if (applications[i].users_telegram_id) {
+                            if (applications[i].triggers_id) {
                                 trigger = await Triggers.findOne({
                                     attributes: ['name'],
                                     where: {
@@ -46,6 +48,17 @@ module.exports = function (app) {
                                 });
                                 if (trigger) {
                                     applications[i].triggers_id = trigger.name
+                                }
+                            }
+                            if (applications[i].servers_id) {
+                                servers = await Servers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].servers_id
+                                    }
+                                });
+                                if (servers) {
+                                    applications[i].servers_id = servers.name
                                 }
                             }
                         }
@@ -95,6 +108,17 @@ module.exports = function (app) {
                                     allApplications[i].triggers_id = trigger.name
                                 }
                             }
+                            if (applications[i].servers_id) {
+                                servers = await Servers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].servers_id
+                                    }
+                                });
+                                if (servers) {
+                                    applications[i].servers_id = servers.name
+                                }
+                            }
                         }
                         applications = allApplications
                     }
@@ -117,7 +141,7 @@ module.exports = function (app) {
                                     applications[i].users_telegram_id = telegram.name;
                                 }
                             }
-                            if (applications[i].users_telegram_id) {
+                            if (applications[i].triggers_id) {
                                 trigger = await Triggers.findOne({
                                     attributes: ['name'],
                                     where: {
@@ -128,10 +152,21 @@ module.exports = function (app) {
                                     applications[i].triggers_id = trigger.name;
                                 }
                             }
+                            if (applications[i].servers_id) {
+                                servers = await Servers.findOne({
+                                    attributes: ['name'],
+                                    where: {
+                                        id: applications[i].servers_id
+                                    }
+                                });
+                                if (servers) {
+                                    applications[i].servers_id = servers.name
+                                }
+                            }
                         }
                     }
                 }
-                if(!applications || applications === "" || applications === undefined){
+                if (!applications || applications === "" || applications === undefined) {
                     applications = []
                 }
                 return res.status(200).json(applications)
@@ -226,9 +261,13 @@ module.exports = function (app) {
                             users_id: userValid.id,
                             users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
                             triggers_id: data.triggers_id ? data.triggers_id : null,
+                            servers_id: data.servers_id ? data.servers_id : null,
                             url_or_ip: urlOrPort,
                             port: data.port ? data.port : null,
-                            protocol: data.protocol
+                            protocol: data.protocol,
+                            check_interval: data.check_interval,
+                            attempts_limit: data.attempts_limit,
+                            correct_request_status: data.correct_request_status ? data.correct_request_status : 200
                         }
                     });
                 }
@@ -244,9 +283,16 @@ module.exports = function (app) {
                         name: data.name,
                         users_telegram_id: data.users_telegram_id,
                         triggers_id: data.triggers_id,
+                        servers_id: data.servers_id,
                         protocol: data.protocol,
                         url_or_ip: urlOrPort,
-                        port: data.port
+                        port: data.port,
+                        queue_status: 'A',
+                        check_interval: data.check_interval,
+                        attempts_limit: data.attempts_limit,
+                        next_check: parseInt(new Date().getTime()) + parseInt(data.check_interval),
+                        created_date: new Date(),
+                        correct_request_status: data.correct_request_status ? data.correct_request_status : 200
                     });
                     if (save) {
                         let values = []
@@ -255,9 +301,16 @@ module.exports = function (app) {
                             name: data.name,
                             users_telegram_id: data.users_telegram_id,
                             triggers_id: data.triggers_id,
+                            servers_id: data.servers_id,
                             protocol: data.protocol,
                             url_or_ip: urlOrPort,
-                            port: data.port
+                            port: data.port,
+                            queue_status: 'A',
+                            check_interval: data.check_interval,
+                            attempts_limit: data.attempts_limit,
+                            next_check: parseInt(new Date().getTime()) + parseInt(data.check_interval),
+                            created_date: new Date(),
+                            correct_request_status: data.correct_request_status ? data.correct_request_status : 200
                         });
                         return res.status(200).json(values);
                     }
@@ -315,8 +368,12 @@ module.exports = function (app) {
                         url_or_ip: data.url_or_ip,
                         users_telegram_id: data.users_telegram_id ? data.users_telegram_id : null,
                         triggers_id: data.triggers_id ? data.triggers_id : null,
+                        servers_id: data.servers_id ? data.servers_id : null,
                         port: req.body.port ? req.body.port : null,
-                        protocol: data.protocol
+                        protocol: data.protocol,
+                        correct_request_status: data.correct_request_status ? data.correct_request_status : 200,
+                        check_interval: data.check_interval,
+                        attempts_limit: data.attempts_limit
                     }
                 });
                 if (urlOrPortExist && urlOrPortExist.dataValues.id !== data.id) {
@@ -330,8 +387,14 @@ module.exports = function (app) {
                         protocol: data.protocol,
                         users_telegram_id: data.users_telegram_id,
                         triggers_id: data.triggers_id,
+                        servers_id: data.servers_id,
                         url_or_ip: data.url_or_ip,
-                        port: data.port
+                        port: data.port,
+                        correct_request_status: data.correct_request_status ? data.correct_request_status : 200,
+                        check_interval: data.check_interval,
+                        attempts_limit: data.attempts_limit,
+                        next_check: parseInt(new Date().getTime()) + parseInt(data.check_interval),
+                        update_date: new Date()
                     }, {
                         where: {
                             id: data.id
@@ -344,9 +407,15 @@ module.exports = function (app) {
                             name: data.name,
                             users_telegram_id: data.users_telegram_id,
                             triggers_id: data.triggers_id,
+                            servers_id: data.servers_id,
                             protocol: data.protocol,
                             url_or_ip: data.url_or_ip,
-                            port: data.port
+                            port: data.port,
+                            correct_request_status: data.correct_request_status ? data.correct_request_status : 200,
+                            check_interval: data.check_interval,
+                            attempts_limit: data.attempts_limit,
+                            next_check: parseInt(new Date().getTime()) + parseInt(data.check_interval),
+                            update_date: new Date()
                         });
                         return res.status(200).json(values);
                     }
