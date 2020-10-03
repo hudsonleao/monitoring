@@ -2,6 +2,7 @@ import * as React from "react";
 import { Admin, Resource } from 'react-admin';
 import LoginPage from "./LoginPage";
 import Dashboard from './Dashboard';
+import Charts from './Charts';
 import authProvider from './authProvider';
 import dataProvider from './dataProvider';
 import { ApplicationsList, ApplicationsEdit, ApplicationsCreate } from './applications';
@@ -21,6 +22,7 @@ import ServersIcon from '@material-ui/icons/Dns';
 import SshKeyIcon from '@material-ui/icons/VpnKey';
 import TelegramIcon from '@material-ui/icons/Telegram';
 import TriggersIcon from '@material-ui/icons/SettingsEthernet';
+import ChartsIcon from '@material-ui/icons/Timeline';
 
 const App = () => (
   <Admin loginPage={LoginPage} dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
@@ -40,6 +42,9 @@ const App = () => (
       <Resource name="ssh_key" list={SshKeyList} edit={SshKeyEdit} create={SshKeyCreate} icon={SshKeyIcon} />,
       <Resource name="telegram" list={TelegramList} edit={TelegramEdit} create={TelegramCreate} icon={TelegramIcon} />,
       <Resource name="triggers" list={TriggersList} edit={TriggersEdit} create={TriggersCreate} icon={TriggersIcon} />,
+      permission === 'super_admin'
+        ? <Resource name="charts" list={Charts} icon={ChartsIcon}/>
+        : null,
     ]}
   </Admin>
 );

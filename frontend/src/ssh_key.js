@@ -1,23 +1,14 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, DateTimeInput, FunctionField, BooleanInput, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, DateField, EditButton, required } from 'react-admin';
+import { List, Edit, Create, SimpleForm, DateTimeInput, FunctionField, BooleanInput, TextInput, Datagrid, TextField, DateField, EditButton, required } from 'react-admin';
 import './sshkey.css';
 import { useMediaQuery } from '@material-ui/core';
 const SshKeyTitle = ({ record }) => {
     return <span>Edit SSH key: {record ? `"${record.name}"` : ''}</span>;
 };
 
-const SshKeyFilter = (props) => (
-    <Filter {...props}>
-        <TextInput label="Search" source="name" alwaysOn />
-        <ReferenceInput label="SshKey" source="name" reference="sshkey" allowEmpty>
-            <SelectInput optionText="name" />
-        </ReferenceInput>
-    </Filter>
-);
-
 export const SshKeyList = (props) => {
     const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
-    return (<List filters={<SshKeyFilter />} {...props}>
+    return (<List {...props}>
         {isSmall ? (
             <Datagrid>
                 <TextField source="id" />

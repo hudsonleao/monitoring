@@ -8,6 +8,7 @@ module.exports = function (app) {
     const Applications = app.models.aplications;
     const Servers = app.models.servers;
     const Triggers = app.models.triggers;
+    const Users = app.models.users;
     const UsersSshKey = app.models.usersSshKey;
     const UsersTelegram = app.models.usersTelegram;
 
@@ -121,6 +122,24 @@ module.exports = function (app) {
         }
     };
 
+    const getUsers = async (id) => {
+        try {
+            let user = await Users.findOne({
+                where: {
+                    id: id
+                }
+            });
+            if (user) {
+                return user
+            } else {
+                return false
+            }
+        } catch (error) {
+            console.log(`Error getUsers: ${error}`);
+            return false
+        }
+    };
+
     const checkstatus = async () => {
         try {
             let list = await getList();
@@ -129,6 +148,7 @@ module.exports = function (app) {
                 for (let i = 0; i < list.length; i++) {
                     const application = list[i];
                     let { id,
+                        users_id,
                         users_telegram_id,
                         triggers_id,
                         servers_id,
@@ -157,7 +177,7 @@ module.exports = function (app) {
                             .then(async (response) => {
                                 if (response) {
                                     if (response.status === (correct_request_status ? correct_request_status : 200)) {
-                                        console.log("Respondendo corretamente")
+                                        //Is answering
 
                                         if (last_status == 'error') {
                                             attempts_success = parseInt(attempts_success) + parseInt(1)
@@ -210,8 +230,8 @@ module.exports = function (app) {
                                             });
                                             return;
                                         }
+                                        //status incorrect
                                     } else {
-                                        console.log("Status incorreto")
                                         if (last_status == 'success') {
                                             attempts_error = parseInt(attempts_error) + parseInt(1)
                                             await Applications.update({
@@ -249,22 +269,25 @@ module.exports = function (app) {
                                                     let trigger = await getTriggers(triggers_id);
                                                     if (trigger) {
                                                         let { command } = trigger;
-        
+
                                                         let server = await getServers(servers_id)
                                                         if (server) {
                                                             let portServer = server.server_ssh_port;
                                                             let dirKeySsh;
                                                             let serverUser = server.server_user;
                                                             let ipServer = server.server_ip
-        
+
                                                             let sshkey = await getUsersSshKey(server.ssh_key_id);
-        
-                                                            if (sshkey) {
-                                                                dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+
+                                                            let user = await getUsers(users_id)
+                                                            if (user) {
+                                                                if (sshkey) {
+                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                }
+                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
-                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-        
+
                                                     }
                                                 }
                                             }
@@ -285,8 +308,9 @@ module.exports = function (app) {
                                             return;
                                         }
                                     }
+
+                                    //Is not answering    
                                 } else {
-                                    console.log("Não está respondendo")
                                     if (last_status == 'success') {
                                         attempts_error = parseInt(attempts_error) + parseInt(1)
                                         await Applications.update({
@@ -324,22 +348,25 @@ module.exports = function (app) {
                                                 let trigger = await getTriggers(triggers_id);
                                                 if (trigger) {
                                                     let { command } = trigger;
-    
+
                                                     let server = await getServers(servers_id)
                                                     if (server) {
                                                         let portServer = server.server_ssh_port;
                                                         let dirKeySsh;
                                                         let serverUser = server.server_user;
                                                         let ipServer = server.server_ip
-    
+
                                                         let sshkey = await getUsersSshKey(server.ssh_key_id);
-    
-                                                        if (sshkey) {
-                                                            dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+
+                                                        let user = await getUsers(users_id)
+                                                        if (user) {
+                                                            if (sshkey) {
+                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            }
+                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
-    
+
                                                 }
                                             }
                                         }
@@ -361,8 +388,9 @@ module.exports = function (app) {
                                     }
                                 }
                             })
+                            // Is not answering
                             .catch(async (erro) => {
-                                console.log("Caiu no catch,", erro.message)
+                                console.log(erro.message)
                                 if (last_status == 'success') {
                                     attempts_error = parseInt(attempts_error) + parseInt(1)
                                     await Applications.update({
@@ -410,10 +438,13 @@ module.exports = function (app) {
 
                                                     let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                    if (sshkey) {
-                                                        dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+                                                    let user = await getUsers(users_id)
+                                                    if (user) {
+                                                        if (sshkey) {
+                                                            dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                        }
+                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
-                                                    executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                 }
 
                                             }
@@ -442,7 +473,7 @@ module.exports = function (app) {
                             .then(async (response) => {
                                 if (response) {
                                     if (response.status === (correct_request_status ? correct_request_status : 200)) {
-                                        console.log("Respondendo corretamente")
+                                        //Is answering
 
                                         if (last_status == 'error') {
                                             attempts_success = parseInt(attempts_success) + parseInt(1)
@@ -494,8 +525,8 @@ module.exports = function (app) {
                                             });
                                             return;
                                         }
+                                        // Status incorrect
                                     } else {
-                                        console.log("Status incorreto")
                                         if (last_status == 'success') {
                                             attempts_error = parseInt(attempts_error) + parseInt(1)
                                             await Applications.update({
@@ -533,22 +564,25 @@ module.exports = function (app) {
                                                     let trigger = await getTriggers(triggers_id);
                                                     if (trigger) {
                                                         let { command } = trigger;
-        
+
                                                         let server = await getServers(servers_id)
                                                         if (server) {
                                                             let portServer = server.server_ssh_port;
                                                             let dirKeySsh;
                                                             let serverUser = server.server_user;
                                                             let ipServer = server.server_ip
-        
+
                                                             let sshkey = await getUsersSshKey(server.ssh_key_id);
-        
-                                                            if (sshkey) {
-                                                                dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+
+                                                            let user = await getUsers(users_id)
+                                                            if (user) {
+                                                                if (sshkey) {
+                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                }
+                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
-                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-        
+
                                                     }
                                                 }
                                             }
@@ -570,7 +604,7 @@ module.exports = function (app) {
                                         }
                                     }
                                 } else {
-                                    console.log("Não está respondendo")
+                                    // Is not answering
                                     if (last_status == 'success') {
                                         attempts_error = parseInt(attempts_error) + parseInt(1)
                                         await Applications.update({
@@ -608,22 +642,25 @@ module.exports = function (app) {
                                                 let trigger = await getTriggers(triggers_id);
                                                 if (trigger) {
                                                     let { command } = trigger;
-    
+
                                                     let server = await getServers(servers_id)
                                                     if (server) {
                                                         let portServer = server.server_ssh_port;
                                                         let dirKeySsh;
                                                         let serverUser = server.server_user;
                                                         let ipServer = server.server_ip
-    
+
                                                         let sshkey = await getUsersSshKey(server.ssh_key_id);
-    
-                                                        if (sshkey) {
-                                                            dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+
+                                                        let user = await getUsers(users_id)
+                                                        if (user) {
+                                                            if (sshkey) {
+                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            }
+                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
-    
+
                                                 }
                                             }
                                         }
@@ -645,8 +682,9 @@ module.exports = function (app) {
                                     }
                                 }
                             })
+                             // Is not answering
                             .catch(async (erro) => {
-                                console.log("Caiu no catch,", erro.message)
+                                console.log(erro.message)
                                 if (last_status == 'success') {
                                     attempts_error = parseInt(attempts_error) + parseInt(1)
                                     await Applications.update({
@@ -694,10 +732,13 @@ module.exports = function (app) {
 
                                                     let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                    if (sshkey) {
-                                                        dirKeySsh = `./keys_ssh/${sshkey.key_name}`
+                                                    let user = await getUsers(users_id)
+                                                    if (user) {
+                                                        if (sshkey) {
+                                                            dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                        }
+                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
-                                                    executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                 }
 
                                             }

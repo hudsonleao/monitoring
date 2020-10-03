@@ -123,7 +123,8 @@ module.exports = function (app) {
                         name: data.name,
                         user: data.user,
                         password: password,
-                        level: data.level
+                        level: data.level,
+                        created_date: new Date()
                     });
                     if (save) {
                         let value = []
@@ -131,7 +132,8 @@ module.exports = function (app) {
                             customers_id: userValid.customers_id,
                             name: data.name,
                             user: data.user,
-                            level: data.level
+                            level: data.level,
+                            created_date: new Date()
                         });
                         return res.status(200).json(value)
                     }

@@ -1,24 +1,15 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, FunctionField, DateField, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
+import { List, Edit, Create, FunctionField, DateField, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const ApplicationsTitle = ({ record }) => {
     return <span>Edit application: {record ? `"${record.name}"` : ''}</span>;
 };
 
-const ApplicationsFilter = (props) => (
-    <Filter {...props}>
-        <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Application" source="Applicationid" reference="aplications" allowEmpty>
-            <SelectInput optionText="name" />
-        </ReferenceInput>
-    </Filter>
-);
-
 export const ApplicationsList = (props) => {
     const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
     return (
-        <List filters={<ApplicationsFilter />} {...props}>
+        <List {...props}>
             {isSmall ? (
                 <Datagrid>
                     <TextField source="name" />

@@ -1,22 +1,13 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, FunctionField, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
+import { List, Edit, Create, SimpleForm, FunctionField, TextInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 const TelegramTitle = ({ record }) => {
     return <span>Edit telegram: {record ? `"${record.name}"` : ''}</span>;
 };
 
-const TelegramFilter = (props) => (
-    <Filter {...props}>
-        <TextInput label="Search" source="name" alwaysOn />
-        <ReferenceInput label="Telegram" source="name" reference="users" allowEmpty>
-            <SelectInput optionText="name" />
-        </ReferenceInput>
-    </Filter>
-);
-
 export const TelegramList = (props) => {
     const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
-    return (<List filters={<TelegramFilter />} {...props}>
+    return (<List {...props}>
         {isSmall ? (
             <Datagrid>
                 <TextField source="id" />

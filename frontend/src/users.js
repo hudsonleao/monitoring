@@ -1,23 +1,14 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, PasswordInput, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
+import { List, Edit, Create, PasswordInput, SimpleForm, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const UsersTitle = ({ record }) => {
     return <span>Edit user: {record ? `"${record.name}"` : ''}</span>;
 };
 
-const UsersFilter = (props) => (
-    <Filter {...props}>
-        <TextInput label="Search" source="name" alwaysOn />
-        <ReferenceInput label="Users" source="name" reference="users" allowEmpty>
-            <SelectInput optionText="description" />
-        </ReferenceInput>
-    </Filter>
-);
-
 export const UsersList = (props) => {
     const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
-    return (<List filters={<UsersFilter />} {...props}>
+    return (<List {...props}>
         {isSmall ? (
             <Datagrid>
                 <TextField source="id" />

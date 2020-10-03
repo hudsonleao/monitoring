@@ -1,23 +1,14 @@
 import * as React from "react";
-import { List, Edit, Filter, Create, SimpleForm, FunctionField, ReferenceInput, TextInput, SelectInput, Datagrid, TextField, EditButton, required } from 'react-admin';
+import { List, Edit, Create, SimpleForm, FunctionField, TextInput, Datagrid, TextField, EditButton, required } from 'react-admin';
 import { useMediaQuery } from '@material-ui/core';
 
 const TriggersTitle = ({ record }) => {
     return <span>Edit trigger: {record ? `"${record.name}"` : ''}</span>;
 };
 
-const TriggersFilter = (props) => (
-    <Filter {...props}>
-        <TextInput label="Search" source="name" alwaysOn />
-        <ReferenceInput label="Triggers" source="name" reference="users" allowEmpty>
-            <SelectInput optionText="description" />
-        </ReferenceInput>
-    </Filter>
-);
-
 export const TriggersList = (props) => {
     const isSmall = useMediaQuery(theme => theme.breakpoints.down('sm'));
-    return (<List filters={<TriggersFilter />} {...props}>
+    return (<List {...props}>
         {isSmall ? (
             <Datagrid>
                 <TextField source="id" />
