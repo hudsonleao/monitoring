@@ -41,14 +41,16 @@ export default {
             localStorage.setItem('username', username);
             localStorage.setItem('secret', secret);
             localStorage.setItem('permission', permission);
-
         }
+
     },
     // called when the user clicks on the logout button
     logout: async () => {
         localStorage.removeItem('username');
         localStorage.removeItem('secret');
         localStorage.removeItem('permission');
+        localStorage.removeItem('charts_users');
+        localStorage.removeItem('charts_dates');
 
         return Promise.resolve();
     },

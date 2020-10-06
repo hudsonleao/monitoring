@@ -51,9 +51,17 @@ module.exports = function (app) {
                     timestamp = timestamp - 86400000
                     let initialDate = new Date(timestamp).toISOString();
                     let users = await filterUsers(initialDate, finalDate)
+                    let day = new Date(finalDate).getDate();
+                    if(day < 10){
+                        day = `0${day}`
+                    }
+                    let month = parseInt(new Date(finalDate).getMonth()) + 1;
+                    if(month < 10){
+                        month = `0${month}`
+                    }
                     if(users > 0){
                         numberOfUsers.push(users);
-                        dates.push(new Date(finalDate).getDate())
+                        dates.push(`${day}/${month}`)
                     }
                     count++
                 }

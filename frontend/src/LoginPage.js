@@ -69,6 +69,34 @@ class LoginPage extends Component {
                 localStorage.setItem('username', username);
                 localStorage.setItem('secret', response.secret);
                 localStorage.setItem('permission', response.permission);
+
+                let token = localStorage.getItem('token');
+                let user = username;
+                let secret = response.secret;
+
+                let url;
+                if (window.location.host.indexOf("localhost") !== -1) {
+                    url = "http://localhost:8065/chart/users"
+                } else {
+                    url = "https://api.monitoramos.com.br/chart/users"
+                }
+                new XMLHttpRequest();
+                xhttp.open("GET", url, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.setRequestHeader('Authorization', `Bearer ${token}`);
+                xhttp.setRequestHeader('user', user);
+                xhttp.setRequestHeader('secret', secret);
+
+
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+                        let response = xhttp.responseText
+                        response = JSON.parse(response)
+                        localStorage.setItem('charts_users', response.users);
+                        localStorage.setItem('charts_dates', response.dates);
+                    }
+                }
+                xhttp.send();
                 window.location.href = `${window.location.origin}/#/`
             } else {
                 let message = xhttp.responseText

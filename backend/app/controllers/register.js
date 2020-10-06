@@ -38,7 +38,8 @@ module.exports = function (app) {
                         name: name,
                         user: username,
                         password: password,
-                        level: 2
+                        level: 2,
+                        created_date: new Date()
                     })
 
                 } else {

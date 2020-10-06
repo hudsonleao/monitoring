@@ -5,19 +5,49 @@ class App extends Component {
     constructor(props) {
         super(props);
 
+        function setCharts() {
+        let token = localStorage.getItem('token');
+        let user = localStorage.getItem('username');
+        let secret = localStorage.getItem('secret');
+
+        let url;
+        if (window.location.host.indexOf("localhost") !== -1) {
+            url = "http://localhost:8065/chart/users"
+        } else {
+            url = "https://api.monitoramos.com.br/chart/users"
+        }
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url, true);
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+        xhttp.setRequestHeader('Authorization', `Bearer ${token}`);
+        xhttp.setRequestHeader('user', user);
+        xhttp.setRequestHeader('secret', secret);
+        
+
+        xhttp.onreadystatechange = function () {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                let response = xhttp.responseText
+                response = JSON.parse(response)
+                localStorage.setItem('charts_users', response.users);
+                localStorage.setItem('charts_dates', response.dates);
+            }
+        }
+        xhttp.send();
+        }
+        
         this.state = {
             options: {
                 chart: {
-                    id: "basic-bar"
+                    id: "new users"
                 },
                 xaxis: {
-                    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+                    categories: localStorage.getItem("charts_dates") ? localStorage.getItem("charts_dates").split(",") : setCharts()
                 }
             },
             series: [
                 {
-                    name: "series-1",
-                    data: [0, 1, 1, 1, 0]
+                    name: "users created",
+                    data: localStorage.getItem("charts_users") ? localStorage.getItem("charts_users").split(","): setCharts()
                 }
             ]
         };
@@ -26,15 +56,11 @@ class App extends Component {
     render() {
         return (
             <div className="app">
-                <h1>Users</h1>
+                <h1>New users</h1>
                 <div className="row">
                     <div className="mixed-chart">
-                        <Chart
-                            options={this.state.options}
-                            series={this.state.series}
-                            type="line"
-                            width="800"
-                        />
+                    {window.innerWidth > 500 ? <Chart options={this.state.options} series={this.state.series} type="line" width="1024" height="400"/> : <Chart options={this.state.options} series={this.state.series} type="line" width="370"/>}
+
                     </div>
                 </div>
             </div>
