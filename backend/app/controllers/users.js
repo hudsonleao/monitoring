@@ -3,6 +3,8 @@ const crypto = require("crypto");
 module.exports = function (app) {
     let controller = {};
     const Users = app.models.users;
+    const Customers = app.models.customers;
+    const Plans = app.models.plans;
     const Auth = new auth(app);
 
     /**
@@ -97,6 +99,11 @@ module.exports = function (app) {
             let msg;
             if (userValid) {
 
+                if (userValid.level === 1) {
+                    return res.status(401).json({
+                        "message": "Operation not allowed"
+                    });
+                }
                 let data = req.body;
                 let password = data.password;
                 password = crypto.createHash('md5').update(password).digest("hex");
@@ -118,6 +125,32 @@ module.exports = function (app) {
                     return res.status(500).json(msg)
 
                 } else {
+                    if (userValid.level !== 3) {
+
+                        let customer = await Customers.findOne({
+                            where: {
+                                id: userValid.customers_id
+                            }
+                        });
+
+                        let plan = await Plans.findOne({
+                            where: {
+                                id: customer.plans_id
+                            }
+                        })
+
+                        let users = await Users.findAll({
+                            where: {
+                                customers_id: userValid.customers_id 
+                            }
+                        });
+
+                        if(users.length >= plan.users_limit){
+                            return res.status(401).json({
+                                "message": "User limit reached"
+                            });
+                        }
+                    }
                     let save = await Users.create({
                         customers_id: userValid.customers_id,
                         name: data.name,

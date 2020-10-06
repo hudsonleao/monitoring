@@ -5,7 +5,6 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        function setCharts() {
         let token = localStorage.getItem('token');
         let user = localStorage.getItem('username');
         let secret = localStorage.getItem('secret');
@@ -33,7 +32,6 @@ class App extends Component {
             }
         }
         xhttp.send();
-        }
         
         this.state = {
             options: {
@@ -41,13 +39,13 @@ class App extends Component {
                     id: "new users"
                 },
                 xaxis: {
-                    categories: localStorage.getItem("charts_dates") ? localStorage.getItem("charts_dates").split(",") : setCharts()
+                    categories: localStorage.getItem("charts_dates").split(",")
                 }
             },
             series: [
                 {
                     name: "users created",
-                    data: localStorage.getItem("charts_users") ? localStorage.getItem("charts_users").split(","): setCharts()
+                    data: localStorage.getItem("charts_users").split(",")
                 }
             ]
         };

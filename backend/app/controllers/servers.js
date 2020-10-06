@@ -4,6 +4,8 @@ module.exports = function (app) {
     const Servers = app.models.servers;
     const Users = app.models.users;
     const UsersSshKey = app.models.usersSshKey;
+    const Customers = app.models.customers;
+    const Plans = app.models.plans;
     const Auth = new auth(app);
 
     /**
@@ -167,6 +169,47 @@ module.exports = function (app) {
                     return res.status(500).json(msg)
 
                 } else {
+
+                    if (userValid.level !== 3) {
+                        let customer = await Customers.findOne({
+                            where: {
+                                id: userValid.customers_id
+                            }
+                        });
+
+                        let plan = await Plans.findOne({
+                            where: {
+                                id: customer.plans_id
+                            }
+                        });
+
+                        let users = await Users.findAll({
+                            where: {
+                                customers_id: userValid.customers_id
+                            }
+                        });
+
+                        let quantity = 0;
+
+                        for (let i = 0; i < users.length; i++) {
+                            const element = users[i];
+                            let servers = await Servers.findAll({
+                                where: {
+                                    users_id: element.id
+                                }
+                            });
+                            if (servers.length > 0) {
+                                quantity = parseInt(quantity) + parseInt(servers.length)
+                            }
+                        }
+
+                        if (quantity >= plan.servers_limit) {
+                            return res.status(401).json({
+                                "message": "Servers limit reached"
+                            });
+                        }
+                    }
+
                     let save = await Servers.create({
                         users_id: userValid.id,
                         name: data.name,

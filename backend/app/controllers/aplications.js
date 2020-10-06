@@ -7,6 +7,8 @@ module.exports = function (app) {
     const Telegram = app.models.usersTelegram;
     const Triggers = app.models.triggers;
     const Servers = app.models.servers;
+    const Customers = app.models.customers;
+    const Plans = app.models.plans;
     const Auth = new auth(app);
 
     /**
@@ -108,15 +110,15 @@ module.exports = function (app) {
                                     allApplications[i].triggers_id = trigger.name
                                 }
                             }
-                            if (applications[i].servers_id) {
+                            if (allApplications[i].servers_id) {
                                 servers = await Servers.findOne({
                                     attributes: ['name'],
                                     where: {
-                                        id: applications[i].servers_id
+                                        id: allApplications[i].servers_id
                                     }
                                 });
                                 if (servers) {
-                                    applications[i].servers_id = servers.name
+                                    allApplications[i].servers_id = servers.name
                                 }
                             }
                         }
@@ -278,6 +280,45 @@ module.exports = function (app) {
                     });
 
                 } else {
+                    if (userValid.level !== 3) {
+                        let customer = await Customers.findOne({
+                            where: {
+                                id: userValid.customers_id
+                            }
+                        });
+
+                        let plan = await Plans.findOne({
+                            where: {
+                                id: customer.plans_id
+                            }
+                        });
+
+                        let users = await Users.findAll({
+                            where: {
+                                customers_id: userValid.customers_id
+                            }
+                        });
+
+                        let quantity = 0;
+
+                        for (let i = 0; i < users.length; i++) {
+                            const element = users[i];
+                            let applications = await Applications.findAll({
+                                where: {
+                                    users_id: element.id
+                                }
+                            });
+                            if (applications.length > 0) {
+                                quantity = parseInt(quantity) + parseInt(applications.length)
+                            }
+                        }
+
+                        if (quantity >= plan.applications_limit) {
+                            return res.status(401).json({
+                                "message": "Applications limit reached"
+                            });
+                        }
+                    }
                     let save = await Applications.create({
                         users_id: userValid.id,
                         name: data.name,
