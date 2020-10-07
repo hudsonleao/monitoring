@@ -18,7 +18,7 @@ export const TelegramList = (props) => {
                 <Datagrid>
                     <TextField source="id" />
                     <TextField source="name" />
-                    <TextField source="telegram_channel_id" />
+                    <TextField source="telegram_chat_id" />
                     <FunctionField label="Message success" render={
                         record => {
                             if (record.message_success) {
@@ -49,7 +49,8 @@ export const TelegramEdit = props => (
         <SimpleForm>
             <TextInput disabled source="id" />
             <TextInput source="name" validate={[required()]} />
-            <TextInput source="telegram_channel_id" validate={[required()]} />
+            <TextInput source="bot_id" validate={[required()]} />
+            <TextInput source="telegram_chat_id" validate={[required()]} />
             <TextInput source="message_success" validate={[required()]} />
             <TextInput source="message_error" validate={[required()]} />
         </SimpleForm>
@@ -60,7 +61,8 @@ export const TelegramCreate = props => (
     <Create {...props}>
         <SimpleForm>
             <TextInput source="name" validate={[required()]} />
-            <TextInput source="telegram_channel_id" validate={[required()]} />
+            <TextInput source="bot_id" validate={[required()]} />
+            <TextInput source="telegram_chat_id" validate={[required()]} />
             <TextInput source="message_success" validate={[required()]} />
             <TextInput source="message_error" validate={[required()]} />
         </SimpleForm>

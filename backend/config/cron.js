@@ -208,8 +208,8 @@ module.exports = function (app) {
                                                         }
                                                     });
                                                     if (telegram) {
-                                                        const { bot_id, telegram_channel_id, message_success } = telegram;
-                                                        await sendMessageTelegram(bot_id, telegram_channel_id, message_success, application);
+                                                        const { bot_id, telegram_chat_id, message_success } = telegram;
+                                                        await sendMessageTelegram(bot_id, telegram_chat_id, message_success, application);
                                                     }
                                                 }
 
@@ -261,8 +261,8 @@ module.exports = function (app) {
                                                         }
                                                     });
                                                     if (telegram) {
-                                                        const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                        await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                        const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                        await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                                     }
                                                 }
                                                 if (triggers_id) {
@@ -340,8 +340,8 @@ module.exports = function (app) {
                                                     }
                                                 });
                                                 if (telegram) {
-                                                    const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                    await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                    const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                    await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                                 }
                                             }
                                             if (triggers_id) {
@@ -420,8 +420,8 @@ module.exports = function (app) {
                                                 }
                                             });
                                             if (telegram) {
-                                                const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                             }
                                         }
                                         if (triggers_id) {
@@ -504,8 +504,8 @@ module.exports = function (app) {
                                                         }
                                                     });
                                                     if (telegram) {
-                                                        const { bot_id, telegram_channel_id, message_success } = telegram;
-                                                        await sendMessageTelegram(bot_id, telegram_channel_id, message_success, application);
+                                                        const { bot_id, telegram_chat_id, message_success } = telegram;
+                                                        await sendMessageTelegram(bot_id, telegram_chat_id, message_success, application);
                                                     }
                                                 }
                                             }
@@ -556,8 +556,8 @@ module.exports = function (app) {
                                                         }
                                                     });
                                                     if (telegram) {
-                                                        const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                        await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                        const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                        await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                                     }
                                                 }
                                                 if (triggers_id) {
@@ -634,8 +634,8 @@ module.exports = function (app) {
                                                     }
                                                 });
                                                 if (telegram) {
-                                                    const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                    await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                    const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                    await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                                 }
                                             }
                                             if (triggers_id) {
@@ -714,8 +714,8 @@ module.exports = function (app) {
                                                 }
                                             });
                                             if (telegram) {
-                                                const { bot_id, telegram_channel_id, message_error } = telegram;
-                                                await sendMessageTelegram(bot_id, telegram_channel_id, message_error, application);
+                                                const { bot_id, telegram_chat_id, message_error } = telegram;
+                                                await sendMessageTelegram(bot_id, telegram_chat_id, message_error, application);
                                             }
                                         }
                                         if (triggers_id) {

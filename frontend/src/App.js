@@ -3,6 +3,7 @@ import { Admin, Resource } from 'react-admin';
 import LoginPage from "./LoginPage";
 import Dashboard from './Dashboard';
 import Charts from './Charts';
+import Tutorials from './tutorials';
 import authProvider from './authProvider';
 import dataProvider from './dataProvider';
 import { ApplicationsList, ApplicationsEdit, ApplicationsCreate } from './applications';
@@ -23,6 +24,7 @@ import SshKeyIcon from '@material-ui/icons/VpnKey';
 import TelegramIcon from '@material-ui/icons/Telegram';
 import TriggersIcon from '@material-ui/icons/SettingsEthernet';
 import ChartsIcon from '@material-ui/icons/Timeline';
+import TutorialsIcon from '@material-ui/icons/Help';
 
 const App = () => (
   <Admin loginPage={LoginPage} dashboard={Dashboard} authProvider={authProvider} dataProvider={dataProvider}>
@@ -45,6 +47,7 @@ const App = () => (
       permission === 'super_admin'
         ? <Resource name="charts" list={Charts} icon={ChartsIcon}/>
         : null,
+        <Resource name="tutorials" list={Tutorials} icon={TutorialsIcon}/>
     ]}
   </Admin>
 );

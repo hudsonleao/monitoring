@@ -131,7 +131,8 @@ module.exports = function (app) {
                 let channelExist = await UsersTelegram.findOne({
                     where: {
                         users_id: userValid.id,
-                        telegram_channel_id: data.telegram_channel_id,
+                        bot_id: data.bot_id,
+                        telegram_chat_id: data.telegram_chat_id,
                         message_success: data.message_success,
                         message_error: data.message_error
                     }
@@ -144,7 +145,8 @@ module.exports = function (app) {
                     let save = await UsersTelegram.create({
                         users_id: userValid.id,
                         name: data.name,
-                        telegram_channel_id: data.telegram_channel_id,
+                        bot_id: data.bot_id,
+                        telegram_chat_id: data.telegram_chat_id,
                         message_success: data.message_success,
                         message_error: data.message_error
                     });
@@ -154,7 +156,8 @@ module.exports = function (app) {
                             id: save.id,
                             users_id: userValid.id,
                             name: data.name,
-                            telegram_channel_id: data.telegram_channel_id,
+                            bot_id: data.bot_id,
+                            telegram_chat_id: data.telegram_chat_id,
                             message_success: data.message_success,
                             message_error: data.message_error
                         });
@@ -207,7 +210,8 @@ module.exports = function (app) {
                 }
                 let save = await UsersTelegram.update({
                     name: data.name,
-                    telegram_channel_id: data.telegram_channel_id,
+                    bot_id: data.bot_id,
+                    telegram_chat_id: data.telegram_chat_id,
                     message_success: data.message_success,
                     message_error: data.message_error
                 }, {
@@ -220,7 +224,8 @@ module.exports = function (app) {
                     values.push({
                         id: data.id,
                         name: data.name,
-                        telegram_channel_id: data.telegram_channel_id,
+                        bot_id: data.bot_id,
+                        telegram_chat_id: data.telegram_chat_id,
                         message_success: data.message_success,
                         message_error: data.message_error
                     });

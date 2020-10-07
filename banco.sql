@@ -197,7 +197,7 @@ CREATE TABLE `users_telegram` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `telegram_channel_id` varchar(255) NOT NULL,
+  `telegram_chat_id` varchar(255) NOT NULL,
   `message` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

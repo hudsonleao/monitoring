@@ -24,7 +24,7 @@ module.exports = function (app) {
 			type: Sequelize.STRING(255),
 			allowNull: true
 		},
-		telegram_channel_id: {
+		telegram_chat_id: {
 			type: Sequelize.STRING(255),
 			allowNull: false
 		},
