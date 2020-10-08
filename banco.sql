@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 27-Set-2020 às 16:58
+-- Tempo de geração: 09-Out-2020 às 01:33
 -- Versão do servidor: 10.4.13-MariaDB
 -- versão do PHP: 7.2.31
 
@@ -33,13 +33,21 @@ CREATE TABLE `applications` (
   `name` varchar(255) CHARACTER SET latin1 NOT NULL,
   `users_telegram_id` int(11) DEFAULT NULL,
   `triggers_id` int(11) DEFAULT NULL,
+  `servers_id` int(11) DEFAULT NULL,
   `protocol` varchar(5) CHARACTER SET latin1 NOT NULL,
   `url_or_ip` varchar(255) CHARACTER SET latin1 NOT NULL,
   `port` varchar(6) CHARACTER SET latin1 DEFAULT NULL,
-  `last_status` varchar(255) CHARACTER SET latin1 DEFAULT 'success',
+  `correct_request_status` int(3) NOT NULL,
+  `last_status` varchar(255) NOT NULL DEFAULT 'unchecked',
+  `check_interval` int(255) NOT NULL,
+  `queue_status` varchar(1) CHARACTER SET latin1 DEFAULT 'A' COMMENT 'A - Await|P - Processing|F-Finished|E-Error',
   `last_check` datetime DEFAULT NULL,
+  `next_check` datetime DEFAULT NULL,
+  `attempts_limit` int(11) NOT NULL,
   `attempts_error` int(1) DEFAULT 0,
-  `attempts_success` int(1) DEFAULT 0
+  `attempts_success` int(1) DEFAULT 0,
+  `created_date` datetime DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -64,7 +72,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `plans_id`, `name`, `email`, `address`, `city`, `phone_number`, `document`) VALUES
-(1, 2, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', 'Rua A, 562 - São Tomé', '37999999999', '37999999999', '111111111111111');
+(1, 2, 'Admin', 'admin@monitoramos.com.br', 'Rua A, 562 - São Tomé', '37999999999', '37999999999', '222222222222');
 
 -- --------------------------------------------------------
 
@@ -112,7 +120,9 @@ CREATE TABLE `servers` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `ip` varchar(255) NOT NULL,
+  `server_user` varchar(255) NOT NULL,
+  `server_ip` varchar(255) NOT NULL,
+  `server_ssh_port` int(6) NOT NULL DEFAULT 22,
   `ssh_key_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -141,16 +151,16 @@ CREATE TABLE `users` (
   `name` varchar(255) CHARACTER SET latin1 NOT NULL,
   `user` varchar(255) CHARACTER SET latin1 NOT NULL,
   `password` varchar(255) CHARACTER SET latin1 NOT NULL,
-  `level` int(1) NOT NULL DEFAULT 1
+  `level` int(1) NOT NULL DEFAULT 1,
+  `created_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Extraindo dados da tabela `users`
 --
 
-INSERT INTO `users` (`id`, `customers_id`, `name`, `user`, `password`, `level`) VALUES
-(1, 1, 'Administrator', 'admin@monitoramos.com.br', 'f73119e41141c8af5b0c047c11e6df28', 3),
-(2, 1, 'Hudson Libério Leão', 'hudsonleaoti@gmail.com', '329dd6b5891e07fd5a2ca76f797ec758', 3);
+INSERT INTO `users` (`id`, `customers_id`, `name`, `user`, `password`, `level`, `created_date`) VALUES
+(1, 1, 'Administrator', 'admin@monitoramos.com.br', 'f73119e41141c8af5b0c047c11e6df28', 3, '2020-10-02 22:42:34');
 
 -- --------------------------------------------------------
 
@@ -197,8 +207,10 @@ CREATE TABLE `users_telegram` (
   `id` int(11) NOT NULL,
   `users_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `bot_id` varchar(255) NOT NULL,
   `telegram_chat_id` varchar(255) NOT NULL,
-  `message` varchar(255) NOT NULL
+  `message_success` varchar(255) NOT NULL,
+  `message_error` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -210,8 +222,10 @@ CREATE TABLE `users_telegram` (
 --
 ALTER TABLE `applications`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `usuarios_id` (`users_id`),
-  ADD KEY `users_telegram_id` (`users_telegram_id`);
+  ADD KEY `servers_id` (`servers_id`),
+  ADD KEY `triggers_id` (`triggers_id`),
+  ADD KEY `users_telegram_id` (`users_telegram_id`),
+  ADD KEY `users_id` (`users_id`);
 
 --
 -- Índices para tabela `customers`
@@ -237,7 +251,7 @@ ALTER TABLE `plans`
 --
 ALTER TABLE `servers`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `users_id` (`users_id`),
+  ADD KEY `usuarios_id` (`users_id`),
   ADD KEY `ssh_key_id` (`ssh_key_id`);
 
 --
@@ -265,14 +279,15 @@ ALTER TABLE `users_level`
 -- Índices para tabela `users_ssh_key`
 --
 ALTER TABLE `users_ssh_key`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `users_id3` (`users_id`);
 
 --
 -- Índices para tabela `users_telegram`
 --
 ALTER TABLE `users_telegram`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`users_id`);
+  ADD KEY `users_id4` (`users_id`);
 
 --
 -- AUTO_INCREMENT de tabelas despejadas
@@ -291,22 +306,52 @@ ALTER TABLE `customers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT de tabela `forgot_password`
+--
+ALTER TABLE `forgot_password`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `plans`
 --
 ALTER TABLE `plans`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT de tabela `servers`
+--
+ALTER TABLE `servers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `triggers`
+--
+ALTER TABLE `triggers`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `users_level`
 --
 ALTER TABLE `users_level`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `users_ssh_key`
+--
+ALTER TABLE `users_ssh_key`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `users_telegram`
+--
+ALTER TABLE `users_telegram`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para despejos de tabelas
@@ -316,21 +361,23 @@ ALTER TABLE `users_level`
 -- Limitadores para a tabela `applications`
 --
 ALTER TABLE `applications`
-  ADD CONSTRAINT `users_telegram_id` FOREIGN KEY (`users_telegram_id`) REFERENCES `users_telegram` (`id`),
-  ADD CONSTRAINT `usuarios_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `servers_id` FOREIGN KEY (`servers_id`) REFERENCES `servers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `triggers_id` FOREIGN KEY (`triggers_id`) REFERENCES `triggers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `users_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `users_telegram_id` FOREIGN KEY (`users_telegram_id`) REFERENCES `users_telegram` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `customers`
 --
 ALTER TABLE `customers`
-  ADD CONSTRAINT `customer_plan` FOREIGN KEY (`plans_id`) REFERENCES `plans` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `customer_plan` FOREIGN KEY (`plans_id`) REFERENCES `plans` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `servers`
 --
 ALTER TABLE `servers`
-  ADD CONSTRAINT `ssh_key_id` FOREIGN KEY (`ssh_key_id`) REFERENCES `users_ssh_key` (`id`),
-  ADD CONSTRAINT `users_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `ssh_key_id` FOREIGN KEY (`ssh_key_id`) REFERENCES `users_ssh_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `usuarios_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `triggers`
@@ -342,14 +389,20 @@ ALTER TABLE `triggers`
 -- Limitadores para a tabela `users`
 --
 ALTER TABLE `users`
-  ADD CONSTRAINT `user_customer` FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_customer` FOREIGN KEY (`customers_id`) REFERENCES `customers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `user_level` FOREIGN KEY (`level`) REFERENCES `users_level` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `users_ssh_key`
+--
+ALTER TABLE `users_ssh_key`
+  ADD CONSTRAINT `users_id3` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `users_telegram`
 --
 ALTER TABLE `users_telegram`
-  ADD CONSTRAINT `user_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `users_id4` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
