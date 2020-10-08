@@ -13,16 +13,16 @@ class App extends Component {
     render() {
         return (
             <div className="app">
-                <h1>Tutorials</h1>
-                <br />
                 <div class="container">
+                    <h1>Tutorials</h1>
+                    <br />
                     <h3>Telegram</h3>
                     <li><a href={CreationBot}> Creation of the Telegram bot step by step</a></li>
                     <li><a href={GetPrivate}> Get chat id private message</a></li>
-                    <li><a href={GetGroup}> Get chat id group</a></li><br/>
+                    <li><a href={GetGroup}> Get chat id group</a></li><br />
 
                     <h3>Monitoring</h3>
-                    <li><a href={AddTokenAndChatId}> Add Telegram token bot and chat id</a></li><br/>
+                    <li><a href={AddTokenAndChatId}> Add Telegram token bot and chat id</a></li><br />
                 </div>
             </div>
         );

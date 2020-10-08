@@ -21,7 +21,7 @@ class App extends Component {
         xhttp.setRequestHeader('Authorization', `Bearer ${token}`);
         xhttp.setRequestHeader('user', user);
         xhttp.setRequestHeader('secret', secret);
-        
+
 
         xhttp.onreadystatechange = function () {
             if (xhttp.readyState === 4 && xhttp.status === 200) {
@@ -32,7 +32,7 @@ class App extends Component {
             }
         }
         xhttp.send();
-        
+
         this.state = {
             options: {
                 chart: {
@@ -55,10 +55,12 @@ class App extends Component {
         return (
             <div className="app">
                 <h1>New users</h1>
-                <div className="row">
-                    <div className="mixed-chart">
-                    {window.innerWidth > 500 ? <Chart options={this.state.options} series={this.state.series} type="line" width="1024" height="400"/> : <Chart options={this.state.options} series={this.state.series} type="line" width="390"/>}
+                <div class="container">
+                    <div className="row">
+                        <div className="mixed-chart">
+                            {window.innerWidth > 500 ? <Chart options={this.state.options} series={this.state.series} type="line" width="1024" height="400" /> : <Chart options={this.state.options} series={this.state.series} type="line" width="390" />}
 
+                        </div>
                     </div>
                 </div>
             </div>
