@@ -3,6 +3,7 @@ import CreationBot from './tutorials/creation_of_the_telegram_bot_step_by_step.p
 import GetPrivate from './tutorials/get_chat_id_private_message.pdf';
 import GetGroup from './tutorials/get_chat_id_group.pdf';
 import AddTokenAndChatId from './tutorials/add_telegram_token_and_chat_id.pdf';
+import 'bootstrap/dist/css/bootstrap.css'
 
 class App extends Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class App extends Component {
             <div className="app">
                 <h1>Tutorials</h1>
                 <br />
-                <div>
+                <div class="container">
                     <h3>Telegram</h3>
                     <li><a href={CreationBot}> Creation of the Telegram bot step by step</a></li>
                     <li><a href={GetPrivate}> Get chat id private message</a></li>
