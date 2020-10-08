@@ -57,7 +57,7 @@ class App extends Component {
                 <h1>New users</h1>
                 <div className="row">
                     <div className="mixed-chart">
-                    {window.innerWidth > 500 ? <Chart options={this.state.options} series={this.state.series} type="line" width="1024" height="400"/> : <Chart options={this.state.options} series={this.state.series} type="line" width="370"/>}
+                    {window.innerWidth > 500 ? <Chart options={this.state.options} series={this.state.series} type="line" width="1024" height="400"/> : <Chart options={this.state.options} series={this.state.series} type="line" width="390"/>}
 
                     </div>
                 </div>
