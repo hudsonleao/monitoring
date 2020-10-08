@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Chart from "react-apexcharts";
+import 'bootstrap/dist/css/bootstrap.css'
 
 class App extends Component {
     constructor(props) {
