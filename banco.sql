@@ -123,7 +123,7 @@ CREATE TABLE `servers` (
   `server_user` varchar(255) NOT NULL,
   `server_ip` varchar(255) NOT NULL,
   `server_ssh_port` int(6) NOT NULL DEFAULT 22,
-  `ssh_key_id` int(11) NOT NULL
+  `ssh_key_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -376,7 +376,7 @@ ALTER TABLE `customers`
 -- Limitadores para a tabela `servers`
 --
 ALTER TABLE `servers`
-  ADD CONSTRAINT `ssh_key_id` FOREIGN KEY (`ssh_key_id`) REFERENCES `users_ssh_key` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `ssh_key_id` FOREIGN KEY (`ssh_key_id`) REFERENCES `users_ssh_key` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
   ADD CONSTRAINT `usuarios_id` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --

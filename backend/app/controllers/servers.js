@@ -23,12 +23,14 @@ module.exports = function (app) {
                 if (userValid.level == 3) {
                     servers = await Servers.findAll();
                     for (let i = 0; i < servers.length; i++) {
-                        let sshKey = await UsersSshKey.findOne({
-                            where: {
-                                id: servers[i].ssh_key_id
-                            }
-                        });
-                        servers[i].ssh_key_id = sshKey.name
+                        if (servers[i].ssh_key_id) {
+                            let sshKey = await UsersSshKey.findOne({
+                                where: {
+                                    id: servers[i].ssh_key_id
+                                }
+                            });
+                            servers[i].ssh_key_id = sshKey.name
+                        }
                     }
                 } else if (userValid.level == 2) {
 
@@ -53,12 +55,14 @@ module.exports = function (app) {
                     servers = allServers;
 
                     for (let i = 0; i < servers.length; i++) {
-                        let sshKey = await UsersSshKey.findOne({
-                            where: {
-                                id: servers[i].ssh_key_id
-                            }
-                        });
-                        servers[i].ssh_key_id = sshKey.name
+                        if (servers[i].ssh_key_id) {
+                            let sshKey = await UsersSshKey.findOne({
+                                where: {
+                                    id: servers[i].ssh_key_id
+                                }
+                            });
+                            servers[i].ssh_key_id = sshKey.name
+                        }
                     }
                 } else {
                     servers = await Servers.findAll({
@@ -67,12 +71,14 @@ module.exports = function (app) {
                         }
                     });
                     for (let i = 0; i < servers.length; i++) {
-                        let sshKey = await UsersSshKey.findOne({
-                            where: {
-                                id: servers[i].ssh_key_id
-                            }
-                        });
-                        servers[i].ssh_key_id = sshKey.name
+                        if (servers[i].ssh_key_id) {
+                            let sshKey = await UsersSshKey.findOne({
+                                where: {
+                                    id: servers[i].ssh_key_id
+                                }
+                            });
+                            servers[i].ssh_key_id = sshKey.name
+                        }
                     }
                 }
                 return res.status(200).json(servers)
@@ -161,7 +167,7 @@ module.exports = function (app) {
                         users_id: userValid.id,
                         server_ip: data.server_ip,
                         server_user: data.server_user ? data.server_user : 'root',
-                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
+                        server_ssh_port: data.server_ssh_port ? data.server_ssh_port : 22,
                     }
                 });
                 if (serverExist) {
@@ -215,7 +221,7 @@ module.exports = function (app) {
                         name: data.name,
                         server_ip: data.server_ip,
                         server_user: data.server_user ? data.server_user : 'root',
-                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
+                        server_ssh_port: data.server_ssh_port ? data.server_ssh_port : 22,
                         ssh_key_id: data.ssh_key_id
                     });
                     if (save) {
@@ -226,7 +232,7 @@ module.exports = function (app) {
                             name: data.name,
                             server_ip: data.server_ip,
                             server_user: data.server_user ? data.server_user : 'root',
-                            server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
+                            server_ssh_port: data.server_ssh_port ? data.server_ssh_port : 22,
                             ssh_key_id: data.ssh_key_id
                         });
                         return res.status(200).json(values)
@@ -281,7 +287,7 @@ module.exports = function (app) {
                     server_ip: data.server_ip,
                     server_user: data.server_user ? data.server_user : 'root',
                     ssh_key_id: data.ssh_key_id,
-                    server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22
+                    server_ssh_port: data.server_ssh_port ? data.server_ssh_port : 22
                 }, {
                     where: {
                         id: data.id
@@ -294,7 +300,7 @@ module.exports = function (app) {
                         name: data.name,
                         server_ip: data.serverip,
                         server_user: data.server_user ? data.server_user : 'root',
-                        server_ssh_port: data.server_ssh_port? data.server_ssh_port : 22,
+                        server_ssh_port: data.server_ssh_port ? data.server_ssh_port : 22,
                         ssh_key_id: data.ssh_key_id
                     });
                     return res.status(200).json(values);

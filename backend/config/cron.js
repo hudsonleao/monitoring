@@ -18,7 +18,6 @@ module.exports = function (app) {
         message = message.replace("$ApplicationName", name);
         message = message.replace("$Protocol", protocol);
         message = message.replace("$URLOrIP", url_or_ip);
-        message = message.replace("$URLOrIP", url_or_ip);
         message = message.replace("$Port", port);
         message = message.replace("$CorrectRequestStatus", correct_request_status);
 
@@ -139,6 +138,25 @@ module.exports = function (app) {
             return false
         }
     };
+
+    const getKeyExpirate = async () => {
+        try {
+            const query = `SELECT *
+            FROM users_ssh_key
+            WHERE expiration_date <= CURRENT_TIMESTAMP()`;
+            const list = await app.sequelize.query(query, { type: Sequelize.QueryTypes.SELECT });
+            if (list.length > 0) {
+                return list
+            } else {
+                return []
+            }
+
+        } catch (error) {
+            console.log(`Error getList: ${error}`);
+            return []
+        }
+    }
+
 
     const checkstatus = async () => {
         try {
@@ -276,15 +294,16 @@ module.exports = function (app) {
                                                             let dirKeySsh;
                                                             let serverUser = server.server_user;
                                                             let ipServer = server.server_ip
+                                                            if (server.ssh_key_id) {
+                                                                let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                            let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                            let user = await getUsers(users_id)
-                                                            if (user) {
-                                                                if (sshkey) {
-                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                let user = await getUsers(users_id)
+                                                                if (user) {
+                                                                    if (sshkey) {
+                                                                        dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                    }
+                                                                    executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                                 }
-                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
                                                         }
 
@@ -355,18 +374,18 @@ module.exports = function (app) {
                                                         let dirKeySsh;
                                                         let serverUser = server.server_user;
                                                         let ipServer = server.server_ip
+                                                        if (server.ssh_key_id) {
+                                                            let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                        let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                        let user = await getUsers(users_id)
-                                                        if (user) {
-                                                            if (sshkey) {
-                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            let user = await getUsers(users_id)
+                                                            if (user) {
+                                                                if (sshkey) {
+                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                }
+                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
-                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
                                                     }
-
                                                 }
                                             }
                                         }
@@ -435,18 +454,18 @@ module.exports = function (app) {
                                                     let dirKeySsh;
                                                     let serverUser = server.server_user;
                                                     let ipServer = server.server_ip
+                                                    if (server.ssh_key_id) {
+                                                        let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                    let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                    let user = await getUsers(users_id)
-                                                    if (user) {
-                                                        if (sshkey) {
-                                                            dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                        let user = await getUsers(users_id)
+                                                        if (user) {
+                                                            if (sshkey) {
+                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            }
+                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
                                                 }
-
                                             }
                                         }
                                     }
@@ -571,18 +590,18 @@ module.exports = function (app) {
                                                             let dirKeySsh;
                                                             let serverUser = server.server_user;
                                                             let ipServer = server.server_ip
+                                                            if (server.ssh_key_id) {
+                                                                let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                            let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                            let user = await getUsers(users_id)
-                                                            if (user) {
-                                                                if (sshkey) {
-                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                let user = await getUsers(users_id)
+                                                                if (user) {
+                                                                    if (sshkey) {
+                                                                        dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                    }
+                                                                    executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                                 }
-                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
                                                         }
-
                                                     }
                                                 }
                                             }
@@ -649,18 +668,18 @@ module.exports = function (app) {
                                                         let dirKeySsh;
                                                         let serverUser = server.server_user;
                                                         let ipServer = server.server_ip
+                                                        if (server.ssh_key_id) {
+                                                            let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                        let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                        let user = await getUsers(users_id)
-                                                        if (user) {
-                                                            if (sshkey) {
-                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            let user = await getUsers(users_id)
+                                                            if (user) {
+                                                                if (sshkey) {
+                                                                    dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                                }
+                                                                executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                             }
-                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
                                                     }
-
                                                 }
                                             }
                                         }
@@ -682,7 +701,7 @@ module.exports = function (app) {
                                     }
                                 }
                             })
-                             // Is not answering
+                            // Is not answering
                             .catch(async (erro) => {
                                 console.log(erro.message)
                                 if (last_status == 'success') {
@@ -729,18 +748,18 @@ module.exports = function (app) {
                                                     let dirKeySsh;
                                                     let serverUser = server.server_user;
                                                     let ipServer = server.server_ip
+                                                    if (server.ssh_key_id) {
+                                                        let sshkey = await getUsersSshKey(server.ssh_key_id);
 
-                                                    let sshkey = await getUsersSshKey(server.ssh_key_id);
-
-                                                    let user = await getUsers(users_id)
-                                                    if (user) {
-                                                        if (sshkey) {
-                                                            dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                        let user = await getUsers(users_id)
+                                                        if (user) {
+                                                            if (sshkey) {
+                                                                dirKeySsh = `../keys_ssh/${user.user}/${sshkey.key_name}`
+                                                            }
+                                                            executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                         }
-                                                        executeCommandServerRemote(dirKeySsh, portServer, serverUser, ipServer, command)
                                                     }
                                                 }
-
                                             }
                                         }
                                     }
@@ -769,11 +788,36 @@ module.exports = function (app) {
             console.log(`Error checkstatus: ${error}`)
             return;
         }
-
     }
+
+    const keySShExpirate = async () => {
+        try {
+            let keys = await getKeyExpirate();
+
+            if (keys.length > 0) {
+                for (let i = 0; i < keys.length; i++) {
+                    await UsersSshKey.destroy({
+                        where: {
+                            id: keys[i].id
+                        }
+                    });
+                }
+            }
+
+        } catch (error) {
+            console.log(`Error keySShExpirate: ${error}`)
+            return;
+        }
+    }
+
+
     _self.start = () => {
         new CronJob('* * * * * *', async () => {
             await checkstatus();
+        }, null, true, 'America/Sao_Paulo');
+
+        new CronJob('00 * * * * *', async () => {
+            await keySShExpirate();
         }, null, true, 'America/Sao_Paulo');
     }
 

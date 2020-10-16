@@ -65,7 +65,11 @@ module.exports = function (app) {
                     }
                     count++
                 }
+                if(numberOfUsers.length > 0){
                 return res.status(200).json({"users": numberOfUsers.reverse(), "dates": dates.reverse()})
+                } else {
+                    return res.status(200).json({"users": [], "dates": []})
+                }
             }   
         } catch (error) {
             console.log(error);

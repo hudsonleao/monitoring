@@ -3,7 +3,7 @@ import { List, Edit, Create, SimpleForm, ReferenceInput, TextInput, SelectInput,
 import { useMediaQuery } from '@material-ui/core';
 
 const CustomersTitle = ({ record }) => {
-    return <span>Edit customer: {record ? `"${record.description}"` : ''}</span>;
+    return <span>Edit customer: {record ? `"${record.name}"` : ''}</span>;
 };
 
 export const CustomersList = (props) => {

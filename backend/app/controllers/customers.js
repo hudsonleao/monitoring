@@ -157,7 +157,8 @@ module.exports = function (app) {
                     plans_id: data.plans_id,
                     name: data.name,
                     address: data.address,
-                    city: data.phone_number,
+                    phone_number: data.phone_number,
+                    city: req.body.city,
                     document: data.document
                 }, {
                     where: {
@@ -171,7 +172,8 @@ module.exports = function (app) {
                         plans_id: data.plans_id,
                         name: data.name,
                         address: data.address,
-                        city: data.phone_number,
+                        phone_number: data.phone_number,
+                        city: req.body.city,
                         document: data.document
                     });
                     return res.status(200).json(values);

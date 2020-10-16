@@ -35,7 +35,7 @@ module.exports = function (app) {
         },
         ssh_key_id: {
 			type: Sequelize.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'users_ssh_key',
                 key: 'id'

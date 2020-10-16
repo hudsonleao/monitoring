@@ -6,10 +6,6 @@ import AddTokenAndChatId from './tutorials/add_telegram_token_and_chat_id.pdf';
 import 'bootstrap/dist/css/bootstrap.css'
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <div className="app">

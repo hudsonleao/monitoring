@@ -3,7 +3,7 @@ import { List, Edit, Create, SimpleForm, TextInput, Datagrid, TextField, EditBut
 import { useMediaQuery } from '@material-ui/core';
 
 const PlansTitle = ({ record }) => {
-    return <span>Edit application: {record ? `"${record.description}"` : ''}</span>;
+    return <span>Edit plan: {record ? `"${record.description}"` : ''}</span>;
 };
 
 export const PlansList = (props) => {
